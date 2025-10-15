@@ -6,6 +6,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your vdfapp!j877ojo xD</Text>
       <StatusBar style="auto" />
+      dawdwadwadawd
     </View>
   );
 }

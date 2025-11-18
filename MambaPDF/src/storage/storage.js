@@ -21,7 +21,8 @@ export const leerPlantilla = async(id) =>{
 
 export const listarPlantillas = async() => {
     try {
-        
+        const keys = await AsyncStorage.getAllKeys();
+        const plantillasKeys = keys.filter(k=> k.startsWith('@plantilla_'))
         
     } catch (error) {
         

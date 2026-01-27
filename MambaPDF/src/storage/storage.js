@@ -22,9 +22,11 @@ export const leerPlantilla = async(id) =>{
 export const listarPlantillas = async() => {
     try {
         const keys = await AsyncStorage.getAllKeys();
-        const plantillasKeys = keys.filter(k=> k.startsWith('@plantilla_'))
-        
+        const plantillasKeys = keys.filter(k=> k.startsWith('@plantilla_'));
+        const values = await AsyncStorage.multiGet(plantillasKeys);
+        return values.map(([keys, value]) => JSON.parse(value))
     } catch (error) {
+        console.log('Error al listar plantillas:', error);
         
     }
 }

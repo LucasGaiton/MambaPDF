@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export  const guardarPlantilla = async (id, data) =>{
     try{
-        await AsyncStorage.setItem(`^@plantilla${id}`, JSON.stringify(data))
+        await AsyncStorage.setItem(`@plantilla${id}`, JSON.stringify(data))
     }
     catch(error){
         console.log("Error al crear la plantilla: ", error );

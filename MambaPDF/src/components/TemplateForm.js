@@ -6,7 +6,7 @@ export default function templateForm () {
 
 
     return(
-        <>Hola que haces</>
+        <></>
     )
 
 }

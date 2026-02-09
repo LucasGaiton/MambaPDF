@@ -17,7 +17,7 @@ export default function TemplateCreator() {
         console.log(nuevoCampo);
             
         setCampos([...campos, {
-            id: nuevoCampo.toLowerCase,
+            id: nuevoCampo.toLowerCase(),
             etiqueta: nuevoCampo,
             tipo: 'texto'
         }])
@@ -33,7 +33,7 @@ export default function TemplateCreator() {
         }
         await guardarPlantilla(plantilla.id, plantilla)
         setNombre("")
-        setCampo([])
+        setCampos([])
         alert("plantilla guardada")
     }
 

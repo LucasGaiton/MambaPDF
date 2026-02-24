@@ -9,7 +9,7 @@ export default function OrderListScreen() {
     lista()
 
     return (
-        <Text>Ordenes Realizadas :
+        <Text>Ordenes Realizadas2.0 :
         </Text>
 
 

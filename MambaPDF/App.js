@@ -9,7 +9,7 @@ export default function App() {
  const plantillaDemo = {
     nombre: "Orden de prueba",
     campos: [
-      { id: "cliente", etiqueta: "Cliente", tipo: "texto" },
+      { id: "cliente", etiqueta: "Perro", tipo: "texto" },
       { id: "fecha", etiqueta: "Fecha", tipo: "texto" },
       { id: "descripcion", etiqueta: "Descripción", tipo: "texto" }
     ]

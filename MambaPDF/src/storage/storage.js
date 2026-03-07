@@ -33,6 +33,8 @@ export const listarPlantillas = async () => {
 
 export const guardarOrden = async (id, data) => {
     try {
+        console.log("VALORES FORM:",data);
+        
         await AsyncStorage.setItem(`@order_${id}`, JSON.stringify(data))
     } catch (error) {
         console.log("Error en el guardado de la orden".error);
@@ -43,7 +45,7 @@ export const guardarOrden = async (id, data) => {
 export async function listarOrdenes() {
     try {
         const keys = await AsyncStorage.getAllKeys();
-        const ordenKeys = keys.filter(k => k.startsWith('@orden_'));
+        const ordenKeys = keys.filter(k => k.startsWith('@order_'));
         const values = await AsyncStorage.multiGet(ordenKeys);
         return values.map(([key, value]) => JSON.parse(value));
     } catch (error) {

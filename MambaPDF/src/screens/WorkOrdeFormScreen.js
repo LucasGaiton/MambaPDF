@@ -4,8 +4,12 @@ import { guardarOrden } from "../storage/storage"
 
 export default function WorkOrderFormScreen({ plantilla }) {
     const [valores, setValores] = useState({})
+    const [refresco, setRefresco] = useState(false)
 
     const actualizarValor = (campoId, valor) => {
+        console.log("Campoid:", campoId);
+        console.log("Valor", valor);
+        
         setValores({
             ...valores,
             [campoId]: valor
@@ -24,6 +28,8 @@ export default function WorkOrderFormScreen({ plantilla }) {
 
         console.log("Orden guardada:", nuevaOrden);
         alert("Orden guardada correctamente ✅");
+        setRefresco(refresco)
+
     }
 
     // const guardarOrden = async () => {
@@ -44,7 +50,7 @@ export default function WorkOrderFormScreen({ plantilla }) {
                         <TextInput
                             style={styles.input}
                             placeholder={`ingrese ${campo.etiqueta}`}
-                            onChange={(texto) => actualizarValor(campo.id, texto)}
+                            onChange={(texto) => actualizarValor(campo.id, texto.nativeEvent.text)}
                         />
                     </View>
                 )

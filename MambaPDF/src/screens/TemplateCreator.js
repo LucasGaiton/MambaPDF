@@ -27,7 +27,7 @@ export default function TemplateCreator() {
     const guardar = async () => {
         if (!nombre || campos.length == 0) return alert("Debe ponerle un nombre a la plantilla y agregar un campo")
         const plantilla = {
-            id: Date.now.toString(),
+            id: Date.now().toString(),
             nombre, campos
 
         }

@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const guardarPlantilla = async (id, data) => {
     try {
         await AsyncStorage.setItem(`@plantilla${id}`, JSON.stringify(data))
+        console.log("Se guardo la plantilla");
+        
     }
     catch (error) {
         console.log("Error al crear la plantilla: ", error);
@@ -22,7 +24,7 @@ export const leerPlantilla = async (id) => {
 export const listarPlantillas = async () => {
     try {
         const keys = await AsyncStorage.getAllKeys();
-        const plantillasKeys = keys.filter(k => k.startsWith('@plantilla_'));
+        const plantillasKeys = keys.filter(k => k.startsWith('@plantilla'));
         const values = await AsyncStorage.multiGet(plantillasKeys);
         return values.map(([keys, value]) => JSON.parse(value))
     } catch (error) {

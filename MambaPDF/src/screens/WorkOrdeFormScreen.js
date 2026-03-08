@@ -1,10 +1,10 @@
 import { useState } from "react"
-import { ScrollView, Text, TextInput, View, StyleSheet, Button } from "react-native-web"
+import { ScrollView, Text, TextInput, View, StyleSheet, Button } from "react-native"
 import { guardarOrden } from "../storage/storage"
 
-export default function WorkOrderFormScreen({ plantilla }) {
+export default function WorkOrderFormScreen({ route, navigation }) {
+    const { plantilla } = route.params;
     const [valores, setValores] = useState({})
-    const [refresco, setRefresco] = useState(false)
 
     const actualizarValor = (campoId, valor) => {
         console.log("Campoid:", campoId);
@@ -27,16 +27,9 @@ export default function WorkOrderFormScreen({ plantilla }) {
         await guardarOrden(nuevaOrden.id, nuevaOrden);
 
         console.log("Orden guardada:", nuevaOrden);
-        alert("Orden guardada correctamente ✅");
-        setRefresco(refresco)
-
+        navigation.goBack();
     }
 
-    // const guardarOrden = async () => {
-    //     console.log("Orden generada:", valores);
-    //     alert("se guardo la orden, puede revisar la consola si lo desea")
-    //     await guardarOrden()
-    // }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -50,7 +43,7 @@ export default function WorkOrderFormScreen({ plantilla }) {
                         <TextInput
                             style={styles.input}
                             placeholder={`ingrese ${campo.etiqueta}`}
-                            onChange={(texto) => actualizarValor(campo.id, texto.nativeEvent.text)}
+                            onChangeText={(texto) => actualizarValor(campo.id, texto)}
                         />
                     </View>
                 )

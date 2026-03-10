@@ -1,4 +1,5 @@
 import React from "react";
+import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -32,41 +33,47 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
+    <PaperProvider>
 
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ title: "Gestor de órdenes" }}
-        />
+      <NavigationContainer>
+        <Stack.Navigator>
 
-        <Stack.Screen
-          name="CrearPlantilla"
-          component={TemplateCreator}
-        />
-        <Stack.Screen
-          name="CrearOrden"
-          component={WorkOrderFormScreen}
-          initialParams={{ plantilla: plantillaDemo }}
-        />
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ title: "Gestor de órdenes" }}
+          />
 
-        <Stack.Screen
-          name="Historial"
-          component={HistoyOrders}
-        />
+          <Stack.Screen
+            name="CrearPlantilla"
+            component={TemplateCreator}
+          />
+          <Stack.Screen
+            name="CrearOrden"
+            component={WorkOrderFormScreen}
+            initialParams={{ plantilla: plantillaDemo }}
+          />
 
-        <Stack.Screen
-          name="DetalleOrden"
-          component={OrderDetail}
-        />
+          <Stack.Screen
+            name="Historial"
+            component={HistoyOrders}
+          />
 
-        <Stack.Screen
-          name="SeleccionarPlantilla"
-          component={SelectTemplate}
-        />
+          <Stack.Screen
+            name="DetalleOrden"
+            component={OrderDetail}
+          />
 
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="SeleccionarPlantilla"
+            component={SelectTemplate}
+          />
+
+        </Stack.Navigator>
+      </NavigationContainer>
+
+
+    </PaperProvider>
+
   );
 }

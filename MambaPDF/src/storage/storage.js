@@ -4,7 +4,7 @@ export const guardarPlantilla = async (id, data) => {
     try {
         await AsyncStorage.setItem(`@plantilla${id}`, JSON.stringify(data))
         console.log("Se guardo la plantilla");
-        
+
     }
     catch (error) {
         console.log("Error al crear la plantilla: ", error);
@@ -35,8 +35,8 @@ export const listarPlantillas = async () => {
 
 export const guardarOrden = async (id, data) => {
     try {
-        console.log("VALORES FORM:",data);
-        
+        console.log("VALORES FORM:", data);
+
         await AsyncStorage.setItem(`@order_${id}`, JSON.stringify(data))
     } catch (error) {
         console.log("Error en el guardado de la orden".error);
@@ -54,3 +54,29 @@ export async function listarOrdenes() {
         console.log('Error al listar órdenes:', error);
     }
 }
+
+export const guardarConfigPDF = async (config) => {
+    await AsyncStorage.setItem("configPDF", JSON.stringify(config));
+};
+
+export const obtenerConfigPDF = async () => {
+    const data = await AsyncStorage.getItem("configPDF");
+    return data ? JSON.parse(data) : null;
+};
+export const eliminarPlantilla = async (id) => {
+    try {
+        await AsyncStorage.removeItem(`@plantilla${id}`);
+        console.log("Plantilla eliminada");
+    } catch (error) {
+        console.log("Error al eliminar plantilla:", error);
+    }
+};
+
+export const eliminarOrden = async (id) => {
+    try {
+        await AsyncStorage.removeItem(`@order_${id}`);
+        console.log("Orden eliminada");
+    } catch (error) {
+        console.log("Error al eliminar orden:", error);
+    }
+};

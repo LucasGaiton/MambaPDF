@@ -1,6 +1,16 @@
 import { useState } from "react";
-import { ScrollView, Text, TextInput, View, StyleSheet, Button, Switch, TouchableOpacity } from "react-native";
-import { guardarOrden } from "../storage/storage"
+import {
+    ScrollView,
+    Text,
+    TextInput,
+    View,
+    StyleSheet,
+    Button,
+    Switch,
+    TouchableOpacity
+} from "react-native";
+
+import { guardarOrden } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
 
@@ -9,42 +19,57 @@ export default function WorkOrderFormScreen({ route, navigation }) {
     const { plantilla } = route.params;
 
     const getInitialState = () => {
+
         const initialState = {};
 
-        plantilla.campos.forEach(campo => {
-            if (campo.tipo === "boolean") {
-                initialState[campo.id] = false;
-            } else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
-                initialState[campo.id] = campo.opciones[0];
-            } else {
-                initialState[campo.id] = "";
-            }
+        plantilla.secciones.forEach(seccion => {
+
+            seccion.campos.forEach(campo => {
+
+                if (campo.tipo === "boolean") {
+                    initialState[campo.id] = false;
+                }
+
+                else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
+                    initialState[campo.id] = campo.opciones[0];
+                }
+
+                else {
+                    initialState[campo.id] = "";
+                }
+
+            });
+
         });
 
         return initialState;
+
     };
 
     const [valores, setValores] = useState(getInitialState());
 
-    // 👇 estados del DatePicker
     const [openDatePicker, setOpenDatePicker] = useState(false);
     const [currentDateField, setCurrentDateField] = useState(null);
     const [selectedDate, setSelectedDate] = useState(undefined);
 
     const actualizarValor = (campoId, valor) => {
+
         setValores(prev => ({
             ...prev,
             [campoId]: valor
         }));
+
     };
 
     const guardarOrdenHandler = async () => {
 
         const nuevaOrden = {
+
             id: Date.now().toString(),
-            plantillaId: plantilla.nombre,
+            plantillaId: plantilla.id,
             fechaCreacion: new Date().toISOString(),
             valores: valores
+
         };
 
         await guardarOrden(nuevaOrden.id, nuevaOrden);
@@ -52,11 +77,14 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         console.log("Orden guardada:", nuevaOrden);
 
         navigation.goBack();
+
     };
 
     const abrirDatePicker = (campoId) => {
+
         setCurrentDateField(campoId);
         setOpenDatePicker(true);
+
     };
 
     const onConfirmDate = ({ date }) => {
@@ -65,11 +93,14 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         setSelectedDate(date);
 
         if (date && currentDateField) {
+
             actualizarValor(
                 currentDateField,
                 date.toLocaleDateString("es-ES")
             );
+
         }
+
     };
 
     const renderCampo = (campo) => {
@@ -142,6 +173,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                                 actualizarValor(campo.id, itemValue)
                             }
                         >
+
                             {campo.opciones?.map((opcion, index) => (
                                 <Picker.Item
                                     key={index}
@@ -149,13 +181,16 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                                     value={opcion}
                                 />
                             ))}
+
                         </Picker>
                     </View>
                 );
 
             default:
                 return null;
+
         }
+
     };
 
     return (
@@ -166,15 +201,27 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 {plantilla.nombre}
             </Text>
 
-            {plantilla.campos.map((campo) => (
+            {plantilla.secciones.map((seccion) => (
 
-                <View key={campo.id} style={styles.inputContainer}>
+                <View key={seccion.id} style={styles.seccionContainer}>
 
-                    <Text style={styles.label}>
-                        {campo.etiqueta}
+                    <Text style={styles.seccionTitulo}>
+                        {seccion.titulo}
                     </Text>
 
-                    {renderCampo(campo)}
+                    {seccion.campos.map((campo) => (
+
+                        <View key={campo.id} style={styles.inputContainer}>
+
+                            <Text style={styles.label}>
+                                {campo.etiqueta}
+                            </Text>
+
+                            {renderCampo(campo)}
+
+                        </View>
+
+                    ))}
 
                 </View>
 
@@ -186,25 +233,45 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             />
 
         </ScrollView>
+
     );
+
 }
 
 const styles = StyleSheet.create({
+
     container: {
         padding: 20
     },
+
     title: {
         fontSize: 22,
         marginBottom: 20
     },
+
+    seccionContainer: {
+        marginBottom: 25,
+        backgroundColor: "#f5f5f5",
+        padding: 15,
+        borderRadius: 6
+    },
+
+    seccionTitulo: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10
+    },
+
     inputContainer: {
         marginBottom: 15
     },
+
     label: {
         marginBottom: 5,
         fontWeight: "bold",
         fontSize: 16
     },
+
     input: {
         borderWidth: 1,
         borderColor: "#ccc",
@@ -214,22 +281,27 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         justifyContent: "center"
     },
+
     switchContainer: {
         flexDirection: "row",
         alignItems: "center"
     },
+
     pickerContainer: {
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 5,
         backgroundColor: "#fff"
     },
+
     dateText: {
         fontSize: 16,
         color: "#000"
     },
+
     datePlaceholder: {
         fontSize: 16,
         color: "#999"
     }
+
 });

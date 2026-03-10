@@ -18,6 +18,8 @@ import TemplateCreator from "./src/screens/TemplateCreator";
 
 import SelectTemplate from "./src/screens/SelectTemplate";
 
+import SettingsPDFScreen from "./src/screens/SettingsPDFScreen";
+
 
 import { View } from "react-native-web";
 
@@ -68,6 +70,12 @@ export default function App() {
             name="SeleccionarPlantilla"
             component={SelectTemplate}
           />
+
+           <Stack.Screen
+            name="Configurar PDF"
+            component={SettingsPDFScreen}
+          />
+
 
         </Stack.Navigator>
       </NavigationContainer>

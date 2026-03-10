@@ -20,6 +20,11 @@ export default function Home({ navigation }) {
                 onPress={() => navigation.navigate("Historial")}
             />
 
+            <Button
+                title="Configuración de empresa"
+                onPress={() => navigation.navigate("Configurar PDF")}
+            />
+
         </View>
     );
 }

@@ -29,7 +29,7 @@ export default function HistoyOrders({ navigation }) {
 
         const plantilla = obtenerPlantillaDeOrden(orden);
 
-        navigation.navigate("DetalleOrden", {
+        navigation.navigate("Detalle Orden", {
             orden,
             plantilla
         });
@@ -66,7 +66,7 @@ export default function HistoyOrders({ navigation }) {
             >
 
                 <Text style={styles.titulo}>
-                    {item.plantillaId}
+                    {item.plantillaNombre}
                 </Text>
 
                 <Text>ID: {item.id}</Text>
@@ -115,33 +115,42 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        padding: 20
+        padding: 20,
+        backgroundColor: "#F6F3EF"
     },
 
     header: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 15
+        color: "#8B6734",
+        marginBottom: 20
     },
 
     card: {
-        backgroundColor: "#eee",
-        padding: 15,
-        marginBottom: 10,
-        borderRadius: 8
+        backgroundColor: "#FFFFFF",
+        padding: 18,
+        marginBottom: 15,
+        borderRadius: 10,
+        borderLeftWidth: 6,
+        borderLeftColor: "#E1890A",
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 3
     },
 
     titulo: {
         fontWeight: "bold",
-        fontSize: 16,
-        marginBottom: 5
+        fontSize: 17,
+        color: "#B67A26",
+        marginBottom: 6
     },
 
     botonEliminar: {
-        marginTop: 10,
-        backgroundColor: "#ff4d4d",
-        padding: 8,
-        borderRadius: 5,
+        marginTop: 12,
+        backgroundColor: "#8B6734",
+        padding: 10,
+        borderRadius: 6,
         alignItems: "center"
     },
 

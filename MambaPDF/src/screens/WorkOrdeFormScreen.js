@@ -67,6 +67,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             id: Date.now().toString(),
             plantillaId: plantilla.id,
+            plantillaNombre: plantilla.nombre,
             fechaCreacion: new Date().toISOString(),
             valores: valores
 
@@ -226,11 +227,12 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 </View>
 
             ))}
-
-            <Button
-                title="Guardar Orden"
+            <TouchableOpacity
+                style={styles.boton}
                 onPress={guardarOrdenHandler}
-            />
+            >
+                <Text style={styles.botonTexto}>Guardar Orden</Text>
+            </TouchableOpacity>
 
         </ScrollView>
 
@@ -241,25 +243,37 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 const styles = StyleSheet.create({
 
     container: {
-        padding: 20
+        minHeight: "100%",
+        padding: 20,
+        backgroundColor: "#F6F3EF"
     },
 
     title: {
-        fontSize: 22,
-        marginBottom: 20
+        fontSize: 26,
+        fontWeight: "bold",
+        color: "#8B6734",
+        marginBottom: 25,
+        textAlign: "center"
     },
 
     seccionContainer: {
         marginBottom: 25,
-        backgroundColor: "#f5f5f5",
-        padding: 15,
-        borderRadius: 6
+        backgroundColor: "#FFFFFF",
+        padding: 18,
+        borderRadius: 10,
+        borderLeftWidth: 6,
+        borderLeftColor: "#E1890A",
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 3
     },
 
     seccionTitulo: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 10
+        color: "#B67A26",
+        marginBottom: 12
     },
 
     inputContainer: {
@@ -267,18 +281,19 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        marginBottom: 5,
-        fontWeight: "bold",
-        fontSize: 16
+        marginBottom: 6,
+        fontWeight: "600",
+        fontSize: 15,
+        color: "#333"
     },
 
     input: {
         borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-        fontSize: 16,
-        backgroundColor: "#fff",
+        borderColor: "#E0E0E0",
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 15,
+        backgroundColor: "#FFFFFF",
         justifyContent: "center"
     },
 
@@ -289,19 +304,27 @@ const styles = StyleSheet.create({
 
     pickerContainer: {
         borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        backgroundColor: "#fff"
+        borderColor: "#E0E0E0",
+        borderRadius: 8,
+        backgroundColor: "#FFFFFF"
     },
 
     dateText: {
-        fontSize: 16,
-        color: "#000"
+        fontSize: 15,
+        color: "#333"
     },
 
     datePlaceholder: {
-        fontSize: 16,
+        fontSize: 15,
         color: "#999"
-    }
+    },
+    boton: {
+        backgroundColor: "#E1890A",
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: "center",
+        marginBottom: 12,
+        elevation: 3
+    },
 
 });

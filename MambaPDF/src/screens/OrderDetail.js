@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
@@ -16,10 +16,8 @@ export default function OrderDetail({ route }) {
   }, []);
 
   const getConfig = async () => {
-
     const data = await obtenerConfigPDF();
     setConfig(data || {});
-
   };
 
   const generarPDF = async () => {
@@ -54,236 +52,275 @@ export default function OrderDetail({ route }) {
       )
       .join("");
 
-    const contenidoHTML = `
-    <!DOCTYPE html>
+    const contenidoHTML =
+      `
+  <!DOCTYPE html>
 <html>
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <style>
+<style>
 
-    @page {
-      size: A4;
-      margin: 10mm;
-    }
+@page {
+size: A4;
+margin: 10mm;
+}
 
-    body {
-      font-family: Arial;
-      padding: 40px;
-      color: #333;
-      height: 100px
-      }
-    
-    /* HEADER */
+body {
+font-family: Arial;
+padding: 20px, 40px;
+color: #333;
+height: 100vh;
+margin: 0;
+box-sizing: border-box;
 
-    .header {
-      display: flex;
-      justify-content: space-between 
-    }
+background-repeat: no-repeat;
+background-position: center;
+background-size: 60%;
+opacity: 0.05 – 0.1;
+}
 
-    .logo {
-      width: 150px;
-    }
+.watermark {
+position: absolute;
+top: 60%;
+left: 50%;
+transform: translate(-50%, -50%);
+opacity: 0.08;
+width: 500px;
+}
 
-    .empresa {
-      margin-top: 5px;
-      text-align: right;
-    }
+/* HEADER */
 
-    .empresaNombre {
-      font-size: 20px;
-      font-weight: bold;
-    }
+.header {
+display: flex;
+justify-content: space-between
+}
 
-    .empresaTelefono {
-      font-size: 14px;
-      color: #555;
-    }
+.logo {
+width: 150px;
+}
 
-    .empresaEmail {
-      font-size: 13px;
-      color: #555;
-    }
+.empresa {
+margin-top: 5px;
+text-align: right;
+}
 
-    .empresaDireccion {
-      font-size: 13px;
-      color: #555;
-    }
+.empresaNombre {
+font-size: 20px;
+font-weight: bold;
+}
 
-    /* TITULOS */
+.empresaTelefono {
+font-size: 14px;
+color: #555;
+}
 
-    .titulo {
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      margin-top: 20px;
-    }
+.empresaEmail {
+font-size: 13px;
+color: #555;
+}
 
-    .subtitulo {
-      text-align: center;
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 30px;
-    }
+.empresaDireccion {
+font-size: 13px;
+color: #555;
+}
 
-    .info {
-      margin-bottom: 25px;
-    }
+/* TITULOS */
 
-    /* SECCIONES */
+.titulo {
+text-align: center;
+font-size: 28px;
+font-weight: bold;
+}
 
-    .seccion {
-      margin-top: 25px;
-    }
+.subtitulo {
+text-align: center;
+font-size: 14px;
+color: #666;
+margin-bottom: 0px;
+}
 
-    .seccionTitulo {
-      background: #f2f2f2;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom:3px;
-    }
+.info {
+margin-bottom: 25px;
+}
 
-    .tabla {
-      width: 100%;
-      border-collapse: collapse;
-    }
+/* SECCIONES */
 
-    .tabla td {
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
+.secciones {
+margin-top:25px;
+}
 
-    .campo {
-      font-weight: bold;
-      width: 40%;
-      background: #fafafa;
-    }
+.seccionTitulo {
+padding: 8px;
+font-size: 18px;
+margin-top: 5px;
+margin-bottom: 0px
+}
 
-    /* FIRMAS */
+.tabla {
+width: 100%;
+border-collapse: collapse;
+}
 
-    .firmas {
-      margin-top: 80px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-    }
+.tabla td {
+border: 1px solid #ccc;
+padding: 10px;
+}
 
-    .firma {
-      width: 40%;
-      text-align: center;
-    }
+.campo {
+font-weight: bold;
+width: 40%;
+background: #fafafa;
+}
 
-    .linea {
-      margin-top: 60px;
-      border-top: 1px solid black;
-    }
+/* FIRMAS */
 
-    /* FOOTER */
+.firmas {
+margin-top: 80px;
+width: 100%;
+display: flex;
+justify-content: space-between;
+}
 
-    .footer {
-      margin-top: 60px;
-      border-top: 1px solid #ddd;
-      padding-top: 10px;
-      text-align: center;
-      font-size: 12px;
-      color: #777;
-    }
+.firma {
+display:flex;
+flex-direction: column;
+justify-content: end;
+ailign-items: center;
+width: 40%;
+text-align: center;
+}
 
-  </style>
+.linea {
+margin-top: 60px;
+border-top: 1px solid black;
+}
+
+.lineaFirma{
+border-top: 1px solid black;
+}
+
+/* FOOTER */
+
+.footer {
+margin-top: 60px;
+border-top: 1px solid #ddd;
+padding-top: 10px;
+text-align: center;
+font-size: 12px;
+color: #777;
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <!-- HEADER -->
+<img class="watermark" src="data:image/png;base64,${config?.empresaLogo}" />
 
-  <div class="header">
+<!-- HEADER -->
 
-    <div>
-      ${
-        config?.empresaLogo
-          ? `<img class="logo" src="data:image/png;base64,${config.empresaLogo}" />`
-          : ""
-      }
-    </div>
+<div class="header">
 
-    <div class="empresa">
+<div>
 
-      <div class="empresaNombre">
-        ${config?.empresaNombre || ""}
-      </div>
+${ config?.empresaLogo
+? `<img class="logo" src="data:image/png;base64,${config.empresaLogo}" />`
+: ""
+}
 
-      <div class="empresaTelefono">
-        ${config?.tecnico || ""}
-      </div>
+</div>
 
-      <div class="empresaTelefono">
-        Tel: ${config?.empresaTelefono || ""}
-      </div>
+<div class="empresa">
 
-      <div class="empresaEmail">
-        ${config?.empresaEmail || ""}
-      </div>
+<div class="empresaNombre">
+${config?.empresaNombre || ""}
+</div>
 
-      <div class="empresaDireccion">
-        ${config?.empresaDireccion || ""}
-      </div>
+<div class="empresaTelefono">
+${config?.tecnico || ""}
+</div>
 
-    </div>
+<div class="empresaTelefono">
+Tel: ${config?.empresaTelefono || ""}
+</div>
 
-  </div>
+<div class="empresaEmail">
+${config?.empresaEmail || ""}
+</div>
 
-  <!-- TITULO -->
+<div class="empresaDireccion">
+${config?.empresaDireccion || ""}
+</div>
 
-  <div class="titulo">
-    ORDEN DE TRABAJO
-  </div>
+</div>
 
-  <div class="subtitulo">
-    ${orden.plantillaId}
-  </div>
+</div>
 
-  <!-- SECCIONES DINAMICAS -->
-  <div class="secciones">
-  ${seccionesHTML}
-  
-  </div>
+<!-- TITULO -->
 
+<div class="titulo">
+ORDEN DE TRABAJO
+</div>
 
-  <!-- FIRMAS -->
+<div class="subtitulo">
+${orden.plantillaId}
+</div>
 
-  <div class="firmas">
+<!-- SECCIONES DINAMICAS -->
 
-    <div class="firma">
-      <div class="linea"></div>
-      Técnico
-    </div>
+<div class="secciones">
+${seccionesHTML}
+</div>
 
-    <div class="firma">
-      <div class="linea"></div>
-      Cliente
-    </div>
+<!-- FIRMAS -->
 
-  </div>
+<div class="firmas">
 
-  <!-- FOOTER -->
+<div class="firma">
 
-  <div class="footer">
-    ${config?.piePagina || ""}
-  </div>
+<div>
+
+${ config?.firma
+? `<img class="logo" src="data:image/png;base64,${config.firma}" />`
+: ""
+}
+
+</div>
+
+<div>
+
+<div class="lineaFirma"></div>
+Entregado por
+
+</div>
+
+</div>
+
+<div class="firma">
+
+<div class="logo"></div>
+
+<div class="linea"></div>
+
+Recibí conforme
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="footer">
+${config?.piePagina || ""}
+</div>
 
 </body>
-
 </html>
-    
-    
-    
-    
-    
-    
-    `;
+    `
 
     if (Platform.OS === "web") {
 
@@ -309,31 +346,41 @@ export default function OrderDetail({ route }) {
 
   return (
 
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
 
-      <Text style={styles.titulo}>
-        {orden.plantillaId}
-      </Text>
+      <View style={styles.infoBox}>
 
-      <Text>ID: {orden.id}</Text>
+        <Text style={styles.infoText}>
+          ID: {orden.id}
+        </Text>
 
-      <Text>
-        Fecha: {new Date(orden.fechaCreacion).toLocaleString()}
-      </Text>
+        <Text style={styles.infoText}>
+          Fecha: {new Date(orden.fechaCreacion).toLocaleString()}
+        </Text>
+
+      </View>
 
       {plantilla.secciones.map((seccion) => (
 
-        <View key={seccion.id}>
+        <View key={seccion.id} style={styles.seccionContainer}>
 
-          <Text style={styles.subtitulo}>
+          <Text style={styles.seccionTitulo}>
             {seccion.titulo}
           </Text>
 
           {seccion.campos.map((campo) => (
 
-            <Text key={campo.id}>
-              {campo.etiqueta}: {orden.valores[campo.id]}
-            </Text>
+            <View key={campo.id} style={styles.campoRow}>
+
+              <Text style={styles.campoLabel}>
+                {campo.etiqueta}
+              </Text>
+
+              <Text style={styles.campoValor}>
+                {orden.valores[campo.id] || "-"}
+              </Text>
+
+            </View>
 
           ))}
 
@@ -341,10 +388,14 @@ export default function OrderDetail({ route }) {
 
       ))}
 
-      <Button
-        title="Generar PDF"
+      <TouchableOpacity
+        style={styles.botonPDF}
         onPress={generarPDF}
-      />
+      >
+        <Text style={styles.botonTexto}>
+          Generar PDF
+        </Text>
+      </TouchableOpacity>
 
     </ScrollView>
 
@@ -355,19 +406,85 @@ export default function OrderDetail({ route }) {
 const styles = StyleSheet.create({
 
   container: {
-    flex: 1,
-    padding: 20
+    minHeight: "100%",
+    padding: 20,
+    backgroundColor: "#F6F3EF"
   },
 
-  titulo: {
-    fontSize: 22,
+  title: {
+    fontSize: 26,
     fontWeight: "bold",
+    color: "#8B6734",
+    marginBottom: 20,
+    textAlign: "center"
+  },
+
+  infoBox: {
+    backgroundColor: "#FFFFFF",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3
+  },
+
+  infoText: {
+    fontSize: 15,
+    color: "#444",
+    marginBottom: 5
+  },
+
+  seccionContainer: {
+    marginBottom: 20,
+    backgroundColor: "#FFFFFF",
+    padding: 18,
+    borderRadius: 10,
+    borderLeftWidth: 6,
+    borderLeftColor: "#E1890A",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3
+  },
+
+  seccionTitulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#B67A26",
     marginBottom: 10
   },
 
-  subtitulo: {
-    marginTop: 20,
-    fontWeight: "bold"
+  campoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEE",
+    paddingVertical: 6
+  },
+
+  campoLabel: {
+    fontWeight: "600",
+    color: "#333"
+  },
+
+  campoValor: {
+    color: "#555"
+  },
+
+  botonPDF: {
+    backgroundColor: "#E1890A",
+    padding: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20
+  },
+
+  botonTexto: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16
   }
 
 });

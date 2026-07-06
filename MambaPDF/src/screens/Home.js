@@ -1,28 +1,38 @@
 import React from "react";
-import { View, Button, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+
 export default function Home({ navigation }) {
+
+    const Boton = ({ titulo, pantalla }) => (
+        <TouchableOpacity
+            style={styles.boton}
+            onPress={() => navigation.navigate(pantalla)}
+        >
+            <Text style={styles.textoBoton}>{titulo}</Text>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
 
-            <Button
-                title="Crear plantilla"
-                onPress={() => navigation.navigate("CrearPlantilla")}
+            <Boton
+                titulo="Crear plantilla"
+                pantalla="Crear Plantilla"
             />
 
-            <Button
-                title="Seleccionar plantilla"
-                onPress={() => navigation.navigate("SeleccionarPlantilla")}
+            <Boton
+                titulo="Seleccionar plantilla"
+                pantalla="Seleccionar Plantilla"
             />
 
-            <Button
-                title="Historial de órdenes"
-                onPress={() => navigation.navigate("Historial")}
+            <Boton
+                titulo="Historial de órdenes"
+                pantalla="Historial"
             />
 
-            <Button
-                title="Configuración de empresa"
-                onPress={() => navigation.navigate("Configurar PDF")}
+            <Boton
+                titulo="Configuración de empresa"
+                pantalla="Configurar PDF"
             />
 
         </View>
@@ -30,10 +40,33 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
+        backgroundColor: "#33302D",
         justifyContent: "center",
-        gap: 20,
-        padding: 30
+        alignItems: "center",
+        padding: 20
+    },
+
+    boton: {
+        width: "100%",
+        backgroundColor: "#B67A26",
+        padding: 16,
+        borderRadius: 10,
+        marginBottom: 15,
+        alignItems: "center",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3
+    },
+
+    textoBoton: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold"
     }
+
 });

@@ -2,11 +2,11 @@ import {
     View,
     Text,
     TextInput,
-    Button,
     FlatList,
     StyleSheet,
     Alert,
-    ScrollView
+    ScrollView,
+    TouchableOpacity
 } from "react-native";
 
 import { useState } from "react";
@@ -15,19 +15,15 @@ import { Picker } from "@react-native-picker/picker";
 
 export default function TemplateCreator() {
 
-    // estados plantilla
     const [nombre, setNombre] = useState("");
 
-    // secciones
     const [secciones, setSecciones] = useState([]);
     const [nombreSeccion, setNombreSeccion] = useState("");
     const [seccionActiva, setSeccionActiva] = useState(null);
 
-    // campos
     const [nuevoCampo, setNuevoCampo] = useState("");
     const [tipoCampo, setTipoCampo] = useState("texto");
 
-    // opciones
     const [opcionNueva, setOpcionNueva] = useState("");
     const [opcionesPersonalizadas, setOpcionesPersonalizadas] = useState([]);
 
@@ -152,8 +148,6 @@ export default function TemplateCreator() {
                 style={styles.input}
             />
 
-            {/* CREAR SECCION */}
-
             <Text style={styles.subtitulo}>Nueva Sección</Text>
 
             <TextInput
@@ -163,12 +157,12 @@ export default function TemplateCreator() {
                 style={styles.input}
             />
 
-            <Button
-                title="Agregar Sección"
+            <TouchableOpacity
+                style={styles.boton}
                 onPress={agregarSeccion}
-            />
-
-            {/* SELECTOR SECCION */}
+            >
+                <Text style={styles.botonTexto}>Agregar Sección</Text>
+            </TouchableOpacity>
 
             {secciones.length > 0 && (
 
@@ -178,6 +172,7 @@ export default function TemplateCreator() {
                     <View style={styles.pickerContainer}>
 
                         <Picker
+                            style={styles.picker}
                             selectedValue={seccionActiva}
                             onValueChange={(value) => setSeccionActiva(value)}
                         >
@@ -198,8 +193,6 @@ export default function TemplateCreator() {
 
             )}
 
-            {/* CREAR CAMPO */}
-
             <Text style={styles.subtitulo}>Nuevo Campo</Text>
 
             <TextInput
@@ -214,6 +207,8 @@ export default function TemplateCreator() {
             <View style={styles.pickerContainer}>
 
                 <Picker
+                    outlineStyle= "none"
+                    style={styles.picker}
                     selectedValue={tipoCampo}
                     onValueChange={(value) => setTipoCampo(value)}
                 >
@@ -242,10 +237,12 @@ export default function TemplateCreator() {
                         style={styles.input}
                     />
 
-                    <Button
-                        title="Agregar Opción"
+                    <TouchableOpacity
+                        style={styles.botonSecundario}
                         onPress={agregarOpcion}
-                    />
+                    >
+                        <Text style={styles.botonTexto}>Agregar Opción</Text>
+                    </TouchableOpacity>
 
                     {opcionesPersonalizadas.map((op, index) => (
                         <Text key={index} style={styles.opcionItem}>
@@ -257,12 +254,12 @@ export default function TemplateCreator() {
 
             )}
 
-            <Button
-                title="Agregar Campo"
+            <TouchableOpacity
+                style={styles.boton}
                 onPress={agregarCampo}
-            />
-
-            {/* LISTA DE SECCIONES */}
+            >
+                <Text style={styles.botonTexto}>Agregar Campo</Text>
+            </TouchableOpacity>
 
             {secciones.map(seccion => (
 
@@ -302,10 +299,12 @@ export default function TemplateCreator() {
 
             ))}
 
-            <Button
-                title="Guardar plantilla"
+            <TouchableOpacity
+                style={styles.boton}
                 onPress={guardar}
-            />
+            >
+                <Text style={styles.botonTexto}>Guardar plantilla</Text>
+            </TouchableOpacity>
 
         </ScrollView>
 
@@ -316,62 +315,116 @@ export default function TemplateCreator() {
 const styles = StyleSheet.create({
 
     scrollContainer: {
-        padding: 20
+        minHeight: "100%",
+        padding: 20,
+        backgroundColor: "#F6F3EF",
     },
 
     title: {
-        fontSize: 22,
-        marginBottom: 20
+        fontSize: 26,
+        fontWeight: "bold",
+        color: "#8B6734",
+        marginBottom: 20,
+        textAlign: "center"
     },
 
     input: {
         borderWidth: 1,
-        padding: 10,
-        marginBottom: 10
+        borderColor: "#E0E0E0",
+        backgroundColor: "white",
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 12,
+        fontSize: 15,
+        outlineStyle: "none" ,// web
     },
 
     pickerContainer: {
         borderWidth: 1,
-        borderColor: "#ccc",
-        marginBottom: 10
+        borderColor: "#E0E0E0",
+        backgroundColor: "#FFFFFF",
+        borderRadius: 8,
+        marginBottom: 12,
+        paddingHorizontal: 8,
+        justifyContent: "center",
+        outlineStyle: "none"
+    },
+    picker: {
+        height: 50,
+        color: "#333",
+        outlineStyle: "none" // web
+
     },
 
     subtitulo: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "bold",
-        marginTop: 15,
+        color: "#8B6734",
+        marginTop: 20,
         marginBottom: 10
     },
 
+    boton: {
+        backgroundColor: "#E1890A",
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: "center",
+        marginBottom: 12,
+        elevation: 3
+    },
+
+    botonSecundario: {
+        backgroundColor: "#B67A26",
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: "center",
+        marginBottom: 10
+    },
+
+    botonTexto: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 15
+    },
+
     seccionContainer: {
-        backgroundColor: "#f5f5f5",
-        padding: 10,
+        backgroundColor: "#FFFFFF",
+        padding: 15,
         marginTop: 15,
-        borderRadius: 6
+        marginBottom: 13,
+        borderRadius: 10,
+        borderLeftWidth: 5,
+        borderLeftColor: "#E1890A",
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2
     },
 
     seccionTitulo: {
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: "bold",
-        marginBottom: 5
+        color: "#B67A26",
+        marginBottom: 8
     },
 
     campoContainer: {
         marginLeft: 10,
-        marginBottom: 5
+        marginBottom: 6
     },
 
     campo: {
-        fontWeight: "bold"
+        fontWeight: "600",
+        color: "#333"
     },
 
     opcionesContainer: {
         borderWidth: 1,
-        borderColor: "#e0e0e0",
-        backgroundColor: "#f9f9f9",
-        padding: 10,
+        borderColor: "#E0E0E0",
+        backgroundColor: "#FFF9F2",
+        padding: 12,
         marginBottom: 15,
-        borderRadius: 5
+        borderRadius: 8
     },
 
     opcionesLista: {

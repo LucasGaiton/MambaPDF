@@ -75,21 +75,34 @@ color: #333;
 height: 100vh;
 margin: 0;
 box-sizing: border-box;
-
-background-repeat: no-repeat;
-background-position: center;
-background-size: 60%;
-opacity: 0.05 – 0.1;
 }
 
 .watermark {
-position: absolute;
-top: 60%;
-left: 50%;
-transform: translate(-50%, -50%);
-opacity: 0.08;
-width: 500px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  pointer-events: none;
+  z-index: 0;
 }
+
+.watermark img {
+  width: 500px;
+  opacity: 0.08;
+}
+
+.contenido {
+  position: relative;
+  z-index: 1;
+}
+
+
 
 /* HEADER */
 
@@ -219,7 +232,17 @@ color: #777;
 
 <body>
 
-<img class="watermark" src="data:image/png;base64,${config?.empresaLogo}" />
+<div class="watermark">
+
+    ${
+      config?.empresaLogo
+        ? `<img src="data:image/png;base64,${config.empresaLogo}" />`
+        : ""
+    }
+
+  </div>
+
+<div class="contenido">
 
 <!-- HEADER -->
 
@@ -316,6 +339,8 @@ Recibí conforme
 
 <div class="footer">
 ${config?.piePagina || ""}
+</div>
+
 </div>
 
 </body>

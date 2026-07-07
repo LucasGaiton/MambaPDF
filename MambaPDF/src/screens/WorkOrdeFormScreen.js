@@ -7,7 +7,8 @@ import {
     StyleSheet,
     Button,
     Switch,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from "react-native";
 
 import { guardarOrden } from "../storage/storage";
@@ -45,9 +46,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         return initialState;
 
     };
-
+    //-----------------------ESTADOS
     const [valores, setValores] = useState(getInitialState());
-
+    const [nombreOrden, setNombreOrden] = useState("");
     const [openDatePicker, setOpenDatePicker] = useState(false);
     const [currentDateField, setCurrentDateField] = useState(null);
     const [selectedDate, setSelectedDate] = useState(undefined);
@@ -63,15 +64,25 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
     const guardarOrdenHandler = async () => {
 
+        if (!nombreOrden.trim()) {
+            Alert.alert(
+                "Error",
+                "Debe ingresar un nombre para la orden."
+            );
+            return;
+        }
+
         const nuevaOrden = {
 
             id: Date.now().toString(),
+            nombre: nombreOrden.trim(),
             plantillaId: plantilla.id,
             plantillaNombre: plantilla.nombre,
             fechaCreacion: new Date().toISOString(),
             valores: valores
 
         };
+
 
         await guardarOrden(nuevaOrden.id, nuevaOrden);
 
@@ -201,6 +212,21 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             <Text style={styles.title}>
                 {plantilla.nombre}
             </Text>
+
+            <View style={styles.inputContainer}>
+
+                <Text style={styles.label}>
+                    Nombre de la orden
+                </Text>
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Instalación Router - Cliente Pérez"
+                    value={nombreOrden}
+                    onChangeText={setNombreOrden}
+                />
+
+            </View>
 
             {plantilla.secciones.map((seccion) => (
 

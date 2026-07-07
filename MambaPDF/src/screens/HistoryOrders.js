@@ -66,10 +66,8 @@ export default function HistoyOrders({ navigation }) {
             >
 
                 <Text style={styles.titulo}>
-                    {item.plantillaNombre}
-                </Text>
-
-                <Text>ID: {item.id}</Text>
+                    {item.nombre} ({item.plantillaNombre})
+                </Text> 
 
                 <Text>
                     {new Date(item.fechaCreacion).toLocaleString()}

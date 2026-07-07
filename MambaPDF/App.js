@@ -79,7 +79,7 @@ export default function App() {
           />
 
           <Stack.Screen
-            name="Historial"
+            name="Ordenes guardadas"
             component={HistoyOrders}
           />
 

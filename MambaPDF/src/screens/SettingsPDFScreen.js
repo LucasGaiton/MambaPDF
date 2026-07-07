@@ -71,8 +71,6 @@ export default function SettingsPDFScreen({navigation}) {
 
         <ScrollView contentContainerStyle={styles.container}>
 
-            <Text style={styles.title}>Configuración de Empresa</Text>
-
             <TextInput
                 placeholder="Nombre empresa"
                 value={empresa}

@@ -92,9 +92,6 @@ export default function HistoyOrders({ navigation }) {
 
         <View style={styles.container}>
 
-            <Text style={styles.header}>
-                Historial de Ordenes
-            </Text>
 
             <FlatList
                 data={ordenes}

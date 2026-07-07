@@ -140,7 +140,6 @@ export default function TemplateCreator({navigation}) {
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
 
-            <Text style={styles.title}>Crear Plantilla</Text>
 
             <TextInput
                 placeholder="Nombre de la plantilla"
@@ -149,7 +148,7 @@ export default function TemplateCreator({navigation}) {
                 style={styles.input}
             />
 
-            <Text style={styles.subtitulo}>Nueva Sección</Text>
+            {/* <Text style={styles.subtitulo}>Nueva Sección</Text> */}
 
             <TextInput
                 placeholder="Nombre de la sección"
@@ -168,7 +167,7 @@ export default function TemplateCreator({navigation}) {
             {secciones.length > 0 && (
 
                 <>
-                    <Text style={styles.subtitulo}>Sección activa</Text>
+                    <Text style={styles.subtitulo}>Agregar campos a:</Text>
 
                     <View style={styles.pickerContainer}>
 
@@ -194,16 +193,8 @@ export default function TemplateCreator({navigation}) {
 
             )}
 
-            <Text style={styles.subtitulo}>Nuevo Campo</Text>
-
-            <TextInput
-                placeholder="Nombre del campo"
-                value={nuevoCampo}
-                onChangeText={setNuevoCampo}
-                style={styles.input}
-            />
-
-            <Text>Tipo de campo:</Text>
+            {/* <Text style={styles.subtitulo}>Nuevo Campo</Text> */}
+             <Text style={styles.subtitulo}>Tipo de campo:</Text>
 
             <View style={styles.pickerContainer}>
 
@@ -222,6 +213,15 @@ export default function TemplateCreator({navigation}) {
                 </Picker>
 
             </View>
+
+            <TextInput
+                placeholder="Nombre del campo"
+                value={nuevoCampo}
+                onChangeText={setNuevoCampo}
+                style={styles.input}
+            />
+
+           
 
             {tipoCampo === "opciones" && (
 
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         color: "#8B6734",
-        marginTop: 20,
+        marginTop: 10,
         marginBottom: 10
     },
 

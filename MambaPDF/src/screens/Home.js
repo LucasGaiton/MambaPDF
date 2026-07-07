@@ -21,17 +21,17 @@ export default function Home({ navigation }) {
             />
 
             <Boton
-                titulo="Seleccionar plantilla"
+                titulo="Nueva orden"
                 pantalla="Seleccionar Plantilla"
             />
 
             <Boton
-                titulo="Historial de órdenes"
-                pantalla="Historial"
+                titulo="Ordenes guardadas"
+                pantalla="Ordenes guardadas"
             />
 
             <Boton
-                titulo="Configuración de empresa"
+                titulo="Configurar PDF"
                 pantalla="Configurar PDF"
             />
 

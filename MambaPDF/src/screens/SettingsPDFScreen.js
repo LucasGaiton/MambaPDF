@@ -5,13 +5,14 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import { guardarConfigPDF } from "../storage/storage";
 
-export default function SettingsPDFScreen() {
+export default function SettingsPDFScreen({navigation}) {
 
     const [empresa, setEmpresa] = useState("")
     const [telefono, setTelefono] = useState("")
@@ -37,6 +38,8 @@ export default function SettingsPDFScreen() {
         }
 
         await guardarConfigPDF(config)
+        Alert.alert("Éxito", "Configuración guardada");
+        navigation.navigate("Home")
 
     }
 

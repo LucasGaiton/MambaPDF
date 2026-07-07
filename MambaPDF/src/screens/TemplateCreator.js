@@ -13,7 +13,7 @@ import { useState } from "react";
 import { guardarPlantilla } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 
-export default function TemplateCreator() {
+export default function TemplateCreator({navigation}) {
 
     const [nombre, setNombre] = useState("");
 
@@ -132,6 +132,7 @@ export default function TemplateCreator() {
         setSecciones([]);
 
         Alert.alert("Éxito", "Plantilla guardada");
+        navigation.navigate("Home")
 
     };
 

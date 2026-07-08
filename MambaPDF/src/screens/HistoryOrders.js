@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { listarOrdenes, listarPlantillas, eliminarOrden } from "../storage/storage";
+import SearchBar from "../components/SearchBar";
+
 
 export default function HistoyOrders({ navigation }) {
 
     const [ordenes, setOrdenes] = useState([]);
     const [plantillas, setPlantillas] = useState([]);
+
+    const [textoBusqueda, setTextoBusqueda] = useState("");
+    const [plantillaSeleccionada, setPlantillaSeleccionada] = useState("");
 
     useEffect(() => {
         cargarDatos();
@@ -67,7 +72,7 @@ export default function HistoyOrders({ navigation }) {
 
                 <Text style={styles.titulo}>
                     {item.nombre} ({item.plantillaNombre})
-                </Text> 
+                </Text>
 
                 <Text>
                     {new Date(item.fechaCreacion).toLocaleString()}
@@ -88,16 +93,54 @@ export default function HistoyOrders({ navigation }) {
 
     );
 
+    const ordenesFiltradas = ordenes.filter((orden) => {
+
+        const coincideNombre = orden.nombre
+            .toLowerCase()
+            .includes(textoBusqueda.toLowerCase());
+
+        const coincidePlantilla =
+
+            plantillaSeleccionada === "" ||
+
+            orden.plantillaId === plantillaSeleccionada;
+
+        return coincideNombre && coincidePlantilla;
+
+    });
+
+    const plantillaActiva = plantillas.find(
+        p => p.id === plantillaSeleccionada
+    );
+
     return (
 
         <View style={styles.container}>
 
+            <SearchBar
+
+                textoBusqueda={textoBusqueda}
+                setTextoBusqueda={setTextoBusqueda}
+
+                plantillaSeleccionada={plantillaSeleccionada}
+                setPlantillaSeleccionada={setPlantillaSeleccionada}
+
+                plantillas={plantillas}
+
+            />
+
+            {plantillaSeleccionada && (
+                <Text style={styles.mensajeFiltro}>
+                    Filtrando por: {plantillaActiva?.nombre}
+                </Text>
+            )}
+
 
             <FlatList
-                data={ordenes}
+                data={ordenesFiltradas}
                 keyExtractor={(item) => item.id}
                 renderItem={renderOrden}
-                ListEmptyComponent={<Text>No hay órdenes guardadas</Text>}
+                ListEmptyComponent={<Text style={styles.mensajeNoEncontrado}>No hay órdenes guardadas</Text>}
             />
 
         </View>
@@ -112,13 +155,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "#F6F3EF"
-    },
-
-    header: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#8B6734",
-        marginBottom: 20
     },
 
     card: {
@@ -152,6 +188,42 @@ const styles = StyleSheet.create({
     textoEliminar: {
         color: "white",
         fontWeight: "bold"
-    }
+    },
+    filterButton: {
+        width: 55,
+        height: "100%",
+        backgroundColor: "#E1890A",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    mensajeFiltro: {
+        alignSelf: "flex-start",
+        backgroundColor: "#FFF4E5",
+        color: "#8B6734",
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        borderRadius: 20,
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: "#E1890A",
+        fontWeight: "600",
+        fontSize: 14
+    },
+    mensajeNoEncontrado: {
+        marginTop: 50,
+        textAlign: "center",
+        color: "#777",
+        fontSize: 16,
+        fontWeight: "500",
+        backgroundColor: "#FFFFFF",
+        padding: 20,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2
+    },
 
 });

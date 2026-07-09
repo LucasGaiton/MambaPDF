@@ -12,21 +12,46 @@ import {
 import { useState } from "react";
 import { guardarPlantilla } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function TemplateCreator({navigation}) {
+export default function TemplateCreator({ navigation }) {
 
+    // ======================================
+    // ESTADOS DE LA PLANTILLA
+    // ======================================
+
+    // Nombre de la plantilla
     const [nombre, setNombre] = useState("");
 
+    // Secciones que componen la plantilla
     const [secciones, setSecciones] = useState([]);
+
+    // Nombre de la nueva sección
     const [nombreSeccion, setNombreSeccion] = useState("");
+
+    // Sección actualmente seleccionada para agregar campos
     const [seccionActiva, setSeccionActiva] = useState(null);
 
+    // Nombre del nuevo campo
     const [nuevoCampo, setNuevoCampo] = useState("");
+
+    // Tipo del nuevo campo
     const [tipoCampo, setTipoCampo] = useState("texto");
 
+    // Estados utilizados cuando el campo es de tipo "opciones"
     const [opcionNueva, setOpcionNueva] = useState("");
     const [opcionesPersonalizadas, setOpcionesPersonalizadas] = useState([]);
 
+
+    // ======================================
+    // GESTIÓN DE SECCIONES
+    // ======================================
+
+    /**
+     * Agrega una nueva sección a la plantilla.
+     * Valida que el nombre no esté vacío
+     * y que no exista otra sección con el mismo id.
+     */
     const agregarSeccion = () => {
 
         if (!nombreSeccion.trim()) {
@@ -51,6 +76,36 @@ export default function TemplateCreator({navigation}) {
 
     };
 
+    /**
+  * Elimina una sección completa junto con todos sus campos.
+  * Si la sección eliminada era la activa,
+  * selecciona automáticamente otra o deja ninguna.
+  */
+    const eliminarSeccion = (idSeccion) => {
+
+        const nuevasSecciones = secciones.filter(
+            seccion => seccion.id !== idSeccion
+        );
+
+        setSecciones(nuevasSecciones);
+
+        if (seccionActiva === idSeccion) {
+            setSeccionActiva(
+                nuevasSecciones.length > 0
+                    ? nuevasSecciones[0].id
+                    : null
+            );
+        }
+
+    };
+
+    // ======================================
+    // GESTIÓN DE OPCIONES
+    // ======================================
+
+    /**
+     * Agrega una opción a un campo de tipo selección.
+     */
     const agregarOpcion = () => {
 
         if (!opcionNueva.trim()) {
@@ -62,6 +117,15 @@ export default function TemplateCreator({navigation}) {
 
     };
 
+    // ======================================
+    // GESTIÓN DE CAMPOS
+    // ======================================
+
+    /**
+     * Agrega un nuevo campo a la sección activa.
+     * Valida nombre, sección seleccionada y
+     * cantidad mínima de opciones cuando corresponde.
+     */
     const agregarCampo = () => {
 
         if (!seccionActiva) {
@@ -110,6 +174,39 @@ export default function TemplateCreator({navigation}) {
 
     };
 
+    /**
+       * Elimina un campo de una sección determinada.
+       */
+    const eliminarCampo = (idSeccion, idCampo) => {
+
+        const nuevasSecciones = secciones.map(seccion => {
+
+            if (seccion.id !== idSeccion) {
+                return seccion;
+            }
+
+            return {
+                ...seccion,
+                campos: seccion.campos.filter(
+                    campo => campo.id !== idCampo
+                )
+            };
+
+        });
+
+        setSecciones(nuevasSecciones);
+
+    };
+
+    // ======================================
+    // GUARDADO DE LA PLANTILLA
+    // ======================================
+
+    /**
+     * Construye el objeto plantilla,
+     * lo almacena en AsyncStorage
+     * y vuelve a la pantalla principal.
+     */
     const guardar = async () => {
 
         if (!nombre.trim()) {
@@ -194,12 +291,12 @@ export default function TemplateCreator({navigation}) {
             )}
 
             {/* <Text style={styles.subtitulo}>Nuevo Campo</Text> */}
-             <Text style={styles.subtitulo}>Tipo de campo:</Text>
+            <Text style={styles.subtitulo}>Tipo de campo:</Text>
 
             <View style={styles.pickerContainer}>
 
                 <Picker
-                    outlineStyle= "none"
+                    outlineStyle="none"
                     style={styles.picker}
                     selectedValue={tipoCampo}
                     onValueChange={(value) => setTipoCampo(value)}
@@ -221,7 +318,7 @@ export default function TemplateCreator({navigation}) {
                 style={styles.input}
             />
 
-           
+
 
             {tipoCampo === "opciones" && (
 
@@ -266,17 +363,45 @@ export default function TemplateCreator({navigation}) {
 
                 <View key={seccion.id} style={styles.seccionContainer}>
 
-                    <Text style={styles.seccionTitulo}>
-                        {seccion.titulo}
-                    </Text>
+                    <View style={styles.headerSeccion}>
+
+                        <Text style={styles.seccionTitulo}>
+                            {seccion.titulo}
+                        </Text>
+
+                        <TouchableOpacity
+                            onPress={() => eliminarSeccion(seccion.id)}
+                        >
+                            <Ionicons
+                                name="trash-outline"
+                                size={22}
+                                color="#C0392B"
+                            />
+                        </TouchableOpacity>
+
+                    </View>
 
                     {seccion.campos.map(campo => (
 
                         <View key={campo.id} style={styles.campoContainer}>
 
-                            <Text style={styles.campo}>
-                                • {campo.etiqueta} ({campo.tipo})
-                            </Text>
+                            <View style={styles.headerCampo}>
+
+                                <Text style={styles.campo}>
+                                    • {campo.etiqueta} ({campo.tipo})
+                                </Text>
+
+                                <TouchableOpacity
+                                    onPress={() => eliminarCampo(seccion.id, campo.id)}
+                                >
+                                    <Ionicons
+                                        name="close-circle"
+                                        size={22}
+                                        color="#C0392B"
+                                    />
+                                </TouchableOpacity>
+
+                            </View>
 
                             {campo.tipo === "opciones" && (
 
@@ -291,7 +416,6 @@ export default function TemplateCreator({navigation}) {
                                 </View>
 
                             )}
-
                         </View>
 
                     ))}
@@ -337,7 +461,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 12,
         fontSize: 15,
-        outlineStyle: "none" ,// web
+        outlineStyle: "none",// web
     },
 
     pickerContainer: {
@@ -435,6 +559,32 @@ const styles = StyleSheet.create({
     opcionItem: {
         fontStyle: "italic",
         color: "#555"
-    }
+    },
+    headerSeccion: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8
+    },
+
+    headerCampo: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
+
+    botonEliminar: {
+        color: "#C0392B",
+        fontSize: 22,
+        fontWeight: "bold",
+        paddingHorizontal: 4
+    },
+
+    botonEliminarCampo: {
+        color: "#C0392B",
+        fontSize: 18,
+        fontWeight: "bold",
+        paddingHorizontal: 4
+    },
 
 });

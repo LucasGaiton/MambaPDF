@@ -30,6 +30,7 @@ import { guardarOrden } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
+import { pdfService } from "../services/pdfService";
 
 export default function WorkOrderFormScreen({ route, navigation }) {
 
@@ -185,12 +186,24 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 : "Orden guardada"
         );
         navigation.navigate("Home")
+        return nuevaOrden
 
     };
 
-     /**
-     * Abre el selector de fecha para un campo específico.
-     */
+    const guardarYGenerarPDFHandler = async () => {
+ 
+        const nuevaOrden = await guardarOrdenHandler();
+ 
+        await pdfService({
+            orden: nuevaOrden,
+            plantilla,
+        });
+ 
+    }
+    /**
+    * Abre el selector de fecha para un campo específico.
+    */
+
     const abrirDatePicker = (campoId) => {
         setCurrentDateField(campoId);
         setOpenDatePicker(true);
@@ -391,6 +404,14 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             >
                 <Text style={styles.botonTexto}>
                     {editando ? "Guardar Cambios" : "Guardar Orden"}
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.boton}
+                onPress={guardarYGenerarPDFHandler}
+            >
+                <Text style={styles.botonTexto}>
+                    {editando ? "Guardar Cambios" : "Guardar y Generar PFD"}
                 </Text>
             </TouchableOpacity>
 

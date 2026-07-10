@@ -5,8 +5,9 @@ import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
 import { obtenerConfigPDF } from "../storage/storage";
 import { Ionicons } from "@expo/vector-icons";
+import { Paths, Directory, File } from 'expo-file-system';
 
-export default function OrderDetail({ route,  navigation }) {
+export default function OrderDetail({ route, navigation }) {
 
   const { orden, plantilla } = route.params;
 
@@ -22,6 +23,8 @@ export default function OrderDetail({ route,  navigation }) {
   };
 
   const generarPDF = async () => {
+    console.log("Entra en la función");
+
 
     const seccionesHTML = plantilla.secciones
       .map(
@@ -346,8 +349,11 @@ ${config?.piePagina || ""}
 </body>
 </html>
     `
+    console.log("Hasta aca llegamos");
 
     if (Platform.OS === "web") {
+      console.log("Entramos en el if");
+
 
       const ventana = window.open("", "_blank");
 
@@ -358,12 +364,29 @@ ${config?.piePagina || ""}
       ventana.print();
 
     } else {
-
       const { uri } = await Print.printToFileAsync({
         html: contenidoHTML,
       });
+      const nombreArchivo =
+        `${config.empresaNombre}_${orden.nombre}.pdf`;
 
-      await Sharing.shareAsync(uri);
+      // 1. Creamos la referencia al archivo temporal (origen)
+      const archivoOrigen = new File(uri);
+
+      // 2. Creamos la referencia al destino usando la clase File y Paths.document
+      const archivoDestino = new File(Paths.document.uri + nombreArchivo);
+
+      try {
+        // 3. Usamos el método move() de la instancia
+        await archivoOrigen.move(archivoDestino);
+
+        // 4. Compartimos usando la propiedad .uri del destino
+        await Sharing.shareAsync(archivoDestino.uri);
+      } catch (error) {
+        console.log(error);
+      }
+
+
 
     }
 

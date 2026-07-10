@@ -4,8 +4,9 @@ import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
 import { obtenerConfigPDF } from "../storage/storage";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function OrderDetail({ route }) {
+export default function OrderDetail({ route,  navigation }) {
 
   const { orden, plantilla } = route.params;
 
@@ -234,11 +235,10 @@ color: #777;
 
 <div class="watermark">
 
-    ${
-      config?.empresaLogo
+    ${config?.empresaLogo
         ? `<img src="data:image/png;base64,${config.empresaLogo}" />`
         : ""
-    }
+      }
 
   </div>
 
@@ -250,10 +250,10 @@ color: #777;
 
 <div>
 
-${ config?.empresaLogo
-? `<img class="logo" src="data:image/png;base64,${config.empresaLogo}" />`
-: ""
-}
+${config?.empresaLogo
+        ? `<img class="logo" src="data:image/png;base64,${config.empresaLogo}" />`
+        : ""
+      }
 
 </div>
 
@@ -307,10 +307,10 @@ ${seccionesHTML}
 
 <div>
 
-${ config?.firma
-? `<img class="logo" src="data:image/png;base64,${config.firma}" />`
-: ""
-}
+${config?.firma
+        ? `<img class="logo" src="data:image/png;base64,${config.firma}" />`
+        : ""
+      }
 
 </div>
 
@@ -384,6 +384,25 @@ ${config?.piePagina || ""}
         </Text>
 
       </View>
+      <TouchableOpacity
+        style={styles.botonEditar}
+        onPress={() =>
+          navigation.navigate("Crear Orden", {
+            plantilla,
+            orden,
+          })
+        }
+      >
+        <Ionicons
+          name="create-outline"
+          size={18}
+          color="#8B6734"
+        />
+
+        <Text style={styles.botonEditarTexto}>
+          Editar Orden
+        </Text>
+      </TouchableOpacity>
 
       {plantilla.secciones.map((seccion) => (
 
@@ -510,6 +529,28 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16
-  }
+  },
+  botonEditar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: "#FFF8ED",
+    borderWidth: 1,
+    borderColor: "#E8C68B",
+
+    paddingVertical: 12,
+    borderRadius: 8,
+
+    marginBottom: 25,
+  },
+
+  botonEditarTexto: {
+    marginLeft: 8,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#8B6734",
+  },
+
 
 });

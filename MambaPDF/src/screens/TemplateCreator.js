@@ -9,28 +9,48 @@ import {
     TouchableOpacity
 } from "react-native";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { guardarPlantilla } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function TemplateCreator({ navigation }) {
+export default function TemplateCreator({ navigation, route }) {
+    const plantillaEditar = route?.params?.plantilla;
+    
+    useEffect(() => {
+
+        navigation.setOptions({
+            title: plantillaEditar
+                ? "Editar Plantilla"
+                : "Crear Plantilla"
+        });
+
+    }, [navigation, plantillaEditar]);
+
+
 
     // ======================================
     // ESTADOS DE LA PLANTILLA
     // ======================================
 
     // Nombre de la plantilla
-    const [nombre, setNombre] = useState("");
-
+    const [nombre, setNombre] = useState(
+        plantillaEditar?.nombre || ""
+    );
     // Secciones que componen la plantilla
-    const [secciones, setSecciones] = useState([]);
+    const [secciones, setSecciones] = useState(
+        plantillaEditar?.secciones || []
+    );
 
     // Nombre de la nueva sección
     const [nombreSeccion, setNombreSeccion] = useState("");
 
     // Sección actualmente seleccionada para agregar campos
-    const [seccionActiva, setSeccionActiva] = useState(null);
+    const [seccionActiva, setSeccionActiva] = useState(
+        plantillaEditar?.secciones?.length
+            ? plantillaEditar.secciones[0].id
+            : null
+    );
 
     // Nombre del nuevo campo
     const [nuevoCampo, setNuevoCampo] = useState("");
@@ -218,7 +238,10 @@ export default function TemplateCreator({ navigation }) {
         }
 
         const plantilla = {
-            id: Date.now().toString(),
+            id: plantillaEditar
+                ? plantillaEditar.id
+                : Date.now().toString(),
+
             nombre: nombre.trim(),
             secciones
         };
@@ -228,7 +251,12 @@ export default function TemplateCreator({ navigation }) {
         setNombre("");
         setSecciones([]);
 
-        Alert.alert("Éxito", "Plantilla guardada");
+        Alert.alert(
+            "Éxito",
+            plantillaEditar
+                ? "Plantilla actualizada"
+                : "Plantilla guardada"
+        );
         navigation.navigate("Home")
 
     };
@@ -428,7 +456,11 @@ export default function TemplateCreator({ navigation }) {
                 style={styles.boton}
                 onPress={guardar}
             >
-                <Text style={styles.botonTexto}>Guardar plantilla</Text>
+                <Text style={styles.botonTexto}>
+                    {plantillaEditar
+                        ? "Guardar cambios"
+                        : "Guardar plantilla"}
+                </Text>
             </TouchableOpacity>
 
         </ScrollView>

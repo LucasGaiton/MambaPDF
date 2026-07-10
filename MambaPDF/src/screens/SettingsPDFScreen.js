@@ -10,17 +10,41 @@ import {
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { guardarConfigPDF } from "../storage/storage";
+import { guardarConfigPDF, obtenerConfigPDF } from "../storage/storage";
+import { useEffect } from "react";
 
-export default function SettingsPDFScreen({navigation}) {
+
+export default function SettingsPDFScreen({ navigation }) {
+
+    useEffect(() => {
+        cargarConfiguracion();
+    }, []);
+
+    const cargarConfiguracion = async () => {
+
+        const config = await obtenerConfigPDF();
+
+        if (!config) return;
+
+        setEmpresaNombre(config.empresaNombre || "");
+        setEmpresaTelefono(config.empresaTelefono || "");
+        setEmpresaEmail(config.empresaEmail || "");
+        setEmpresaDireccion(config.empresaDireccion || "");
+        setPiePagina(config.piePagina || "");
+        setTecnico(config.tecnico || "");
+
+        setLogo(config.empresaLogo || null);
+        setFirma(config.firma || null);
+
+    };
 
     const [empresa, setEmpresa] = useState("")
     const [telefono, setTelefono] = useState("")
-    const [logo, setLogo] = useState("")
     const [email, setEmail] = useState("")
     const [tecnico, setTecnico] = useState("")
     const [dire, setDire] = useState("")
     const [piePag, setPiePag] = useState("")
+    const [logo, setLogo] = useState("")
     const [firma, setFirma] = useState("")
 
     const guardar = async () => {
@@ -112,6 +136,7 @@ export default function SettingsPDFScreen({navigation}) {
                 onChangeText={setPiePag}
                 style={styles.input}
             />
+            
 
             <TouchableOpacity
                 style={styles.secondaryButton}

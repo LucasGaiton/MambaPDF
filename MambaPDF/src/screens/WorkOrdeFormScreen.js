@@ -406,14 +406,15 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                     {editando ? "Guardar Cambios" : "Guardar Orden"}
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {editando ? <></> : <TouchableOpacity
                 style={styles.boton}
                 onPress={guardarYGenerarPDFHandler}
             >
                 <Text style={styles.botonTexto}>
-                    {editando ? "Guardar Cambios" : "Guardar y Generar PFD"}
+                    Guardar y Generar PFD
                 </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> }
+            
 
         </ScrollView>
 

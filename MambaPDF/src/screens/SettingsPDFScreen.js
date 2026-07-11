@@ -13,6 +13,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { guardarConfigPDF, obtenerConfigPDF } from "../storage/storage";
 import { useEffect } from "react";
+import { generarPDF } from "../services/pdfService";
 
 
 export default function SettingsPDFScreen({ navigation }) {
@@ -96,6 +97,59 @@ export default function SettingsPDFScreen({ navigation }) {
         }
 
     }
+    const verPreview = async () => {
+
+        const config = {
+            empresaNombre: empresa,
+            empresaTelefono: telefono,
+            empresaLogo: logo,
+            empresaEmail: email,
+            empresaDireccion: dire,
+            piePagina: piePag,
+            tecnico: tecnico,
+            firma: firma
+        };
+
+        const ordenEjemplo = {
+            nombre: "Orden de ejemplo",
+            fechaCreacion: new Date(),
+            valores: {
+                cliente: "Juan Pérez",
+                telefono: "2966 123456",
+                descripcion: "Cambio de fuente de alimentación."
+            }
+        };
+
+        const plantillaPreview = {
+            nombre: "Instalación",
+            secciones: [
+                {
+                    titulo: "Cliente",
+                    campos: [
+                        { id: "cliente", etiqueta: "Cliente" },
+                        { id: "telefono", etiqueta: "Teléfono" }
+                    ]
+                },
+                {
+                    titulo: "Trabajo",
+                    campos: [
+                        { id: "descripcion", etiqueta: "Descripción" }
+                    ]
+                }
+            ]
+        };
+
+        const uri = await generarPDF(
+            config,
+            ordenEjemplo,
+            plantillaPreview
+        );
+
+        navigation.navigate("Preview PDF", {
+            uri,
+        });
+
+    };
 
     return (
 
@@ -175,10 +229,10 @@ export default function SettingsPDFScreen({ navigation }) {
             >
                 <Text style={styles.buttonText}>Seleccionar Firma</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
                 style={styles.secondaryButton}
-                onPress={()=> navigation.navigate("Preview PDF")}
+                onPress={verPreview}
             >
                 <Text style={styles.buttonText}>Vista previa</Text>
             </TouchableOpacity>

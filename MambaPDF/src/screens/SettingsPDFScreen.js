@@ -6,7 +6,8 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
-    Alert
+    Alert,
+    Image
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
@@ -21,16 +22,22 @@ export default function SettingsPDFScreen({ navigation }) {
     }, []);
 
     const cargarConfiguracion = async () => {
+        // console.log("Carga la config");
+
 
         const config = await obtenerConfigPDF();
+        // console.log(typeof config);
+        // console.log(config.empresaNombre);
+        // console.log(config.firma);
+        // console.log(typeof config.empresaLogo);
 
         if (!config) return;
 
-        setEmpresaNombre(config.empresaNombre || "");
-        setEmpresaTelefono(config.empresaTelefono || "");
-        setEmpresaEmail(config.empresaEmail || "");
-        setEmpresaDireccion(config.empresaDireccion || "");
-        setPiePagina(config.piePagina || "");
+        setEmpresa(config.empresaNombre || "");
+        setTelefono(config.empresaTelefono || "");
+        setEmail(config.empresaEmail || "");
+        setDire(config.empresaDireccion || "");
+        setPiePag(config.piePagina || "");
         setTecnico(config.tecnico || "");
 
         setLogo(config.empresaLogo || null);
@@ -54,7 +61,6 @@ export default function SettingsPDFScreen({ navigation }) {
             empresaTelefono: telefono,
             empresaLogo: logo,
             empresaEmail: email,
-            nombreTecnico: tecnico,
             empresaDireccion: dire,
             piePagina: piePag,
             tecnico: tecnico,
@@ -136,7 +142,16 @@ export default function SettingsPDFScreen({ navigation }) {
                 onChangeText={setPiePag}
                 style={styles.input}
             />
-            
+
+            {logo && (
+
+                <Image
+                    source={{ uri: `data:image/png;base64,${logo}` }}
+                    style={styles.logo}
+                />
+
+            )}
+
 
             <TouchableOpacity
                 style={styles.secondaryButton}
@@ -144,6 +159,15 @@ export default function SettingsPDFScreen({ navigation }) {
             >
                 <Text style={styles.buttonText}>Seleccionar Logo</Text>
             </TouchableOpacity>
+
+            {firma && (
+
+                <Image
+                    source={{ uri: `data:image/png;base64,${firma}` }}
+                    style={styles.firma}
+                />
+
+            )}
 
             <TouchableOpacity
                 style={styles.secondaryButton}
@@ -168,7 +192,7 @@ export default function SettingsPDFScreen({ navigation }) {
 const styles = StyleSheet.create({
 
     container: {
-        height: "100%",
+        minHeight: "100%",
         padding: 20,
         backgroundColor: "#F6F3EF"
     },
@@ -211,6 +235,21 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         fontSize: 16
-    }
+    },
+    logo: {
+        width: 180,
+        height: 120,
+        resizeMode: "contain",
+        alignSelf: "center",
+        marginVertical: 15,
+    },
+
+    firma: {
+        width: 220,
+        height: 90,
+        resizeMode: "contain",
+        alignSelf: "center",
+        marginVertical: 15,
+    },
 
 });

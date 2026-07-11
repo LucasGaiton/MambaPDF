@@ -175,6 +175,13 @@ export default function SettingsPDFScreen({ navigation }) {
             >
                 <Text style={styles.buttonText}>Seleccionar Firma</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={()=> navigation.navigate("Preview PDF")}
+            >
+                <Text style={styles.buttonText}>Vista previa</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
                 style={styles.primaryButton}

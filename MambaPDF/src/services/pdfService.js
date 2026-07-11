@@ -4,10 +4,60 @@ import { Platform } from "react-native";
 import { obtenerConfigPDF } from "../storage/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { Paths, Directory, File } from 'expo-file-system';
+
 export async function pdfService({ orden, plantilla }) {
 
 
     const config = await obtenerConfigPDF();
+
+    const html = generarHTMLPDF(
+        config,
+        orden,
+        plantilla
+    );
+   
+    
+    if (Platform.OS === "web") {
+        const ventana = window.open("", "_blank");
+        ventana.document.write(html);
+        ventana.document.close();
+        ventana.focus();
+        ventana.print();
+    } else {
+
+        const { uri } = await Print.printToFileAsync({
+            html: html,
+        });
+        const nombreArchivo =
+            `${config.empresaNombre}_${orden.nombre}.pdf`;
+
+        // 1. Creamos la referencia al archivo temporal (origen)
+        const archivoOrigen = new File(uri);
+
+        // 2. Creamos la referencia al destino usando la clase File y Paths.document
+        const archivoDestino = new File(Paths.document.uri + nombreArchivo);
+        if (archivoDestino.exists) {
+
+            // 2. Eliminación manual
+            archivoDestino.delete();
+        }
+
+        try {
+            // Ahora puedes mover el nuevo archivo sin temor a conflictos
+            await archivoOrigen.move(archivoDestino);
+            // 4. Compartimos usando la propiedad .uri del destino
+            await Sharing.shareAsync(archivoDestino.uri);
+            console.log("Se genera el pdf");
+
+        } catch (error) {
+            console.log("Error al mover:", error);
+        }
+
+
+    }
+}
+export function generarHTMLPDF(config, orden, plantilla) {
+
 
     const seccionesHTML = plantilla.secciones
         .map(
@@ -331,51 +381,17 @@ ${config?.piePagina || ""}
 </body>
 </html>
         `
+    return contenidoHTML;
 
-    if (Platform.OS === "web") {
-        const ventana = window.open("", "_blank");
-        ventana.document.write(contenidoHTML);
-        ventana.document.close();
-        ventana.focus();
-        ventana.print();
-    } else {
+}
 
-        const { uri } = await Print.printToFileAsync({
-            html: contenidoHTML,
-        });
-        const nombreArchivo =
-            `${config.empresaNombre}_${orden.nombre}.pdf`;
+export async function generarPDF(config, orden, plantilla) {
 
-        // 1. Creamos la referencia al archivo temporal (origen)
-        const archivoOrigen = new File(uri);
+    const html = generarHTMLPDF(config, orden, plantilla);
 
-        // 2. Creamos la referencia al destino usando la clase File y Paths.document
-        const archivoDestino = new File(Paths.document.uri + nombreArchivo);
-        if (archivoDestino.exists) {
+    const { uri } = await Print.printToFileAsync({
+        html,
+    });
 
-            // 2. Eliminación manual
-            archivoDestino.delete();
-        }
-
-        try {
-            // Ahora puedes mover el nuevo archivo sin temor a conflictos
-            await archivoOrigen.move(archivoDestino);
-            // 4. Compartimos usando la propiedad .uri del destino
-            await Sharing.shareAsync(archivoDestino.uri);
-            console.log("Se genera el pdf");
-            
-        } catch (error) {
-            console.log("Error al mover:", error);
-        }
-
-
-
-
-
-
-    }
-
-
-
-
+    return uri;
 }

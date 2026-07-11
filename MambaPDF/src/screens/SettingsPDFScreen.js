@@ -146,7 +146,7 @@ export default function SettingsPDFScreen({ navigation }) {
         );
 
         navigation.navigate("Preview PDF", {
-            uri,
+            pdfUri:uri,
         });
 
     };

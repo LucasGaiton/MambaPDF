@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     ScrollView,
     Alert,
-    Image
+    Image,
+    Switch
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
@@ -43,6 +44,7 @@ export default function SettingsPDFScreen({ navigation }) {
 
         setLogo(config.empresaLogo || null);
         setFirma(config.firma || null);
+        setWaterMark(config.waterMark || null)
 
     };
 
@@ -54,6 +56,7 @@ export default function SettingsPDFScreen({ navigation }) {
     const [piePag, setPiePag] = useState("")
     const [logo, setLogo] = useState("")
     const [firma, setFirma] = useState("")
+    const [waterMark, setWaterMark] = useState("")
 
     const guardar = async () => {
 
@@ -65,7 +68,8 @@ export default function SettingsPDFScreen({ navigation }) {
             empresaDireccion: dire,
             piePagina: piePag,
             tecnico: tecnico,
-            firma: firma
+            firma: firma,
+            waterMark: waterMark
         }
 
         await guardarConfigPDF(config)
@@ -97,6 +101,14 @@ export default function SettingsPDFScreen({ navigation }) {
         }
 
     }
+
+    const eliminarLogo = () => {
+        setLogo(null);
+    };
+
+    const eliminarFirma = () => {
+        setFirma(null);
+    };
     const verPreview = async () => {
 
         const config = {
@@ -107,7 +119,8 @@ export default function SettingsPDFScreen({ navigation }) {
             empresaDireccion: dire,
             piePagina: piePag,
             tecnico: tecnico,
-            firma: firma
+            firma: firma,
+            waterMark: waterMark
         };
 
         const ordenEjemplo = {
@@ -138,15 +151,18 @@ export default function SettingsPDFScreen({ navigation }) {
                 }
             ]
         };
+        console.log("Esto es desde la config", typeof waterMark);
+
 
         const uri = await generarPDF(
             config,
             ordenEjemplo,
-            plantillaPreview
+            plantillaPreview,
+
         );
 
         navigation.navigate("Preview PDF", {
-            pdfUri:uri,
+            pdfUri: uri,
         });
 
     };
@@ -155,93 +171,197 @@ export default function SettingsPDFScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.container}>
 
-            <TextInput
-                placeholder="Nombre empresa"
-                value={empresa}
-                onChangeText={setEmpresa}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Nombre de la empresa</Text>
+                <TextInput
+                    placeholder="Ingrese el nombre de la empresa"
+                    value={empresa}
+                    onChangeText={setEmpresa}
+                    style={styles.input}
+                />
+            </View>
 
-            <TextInput
-                placeholder="Teléfono"
-                value={telefono}
-                onChangeText={setTelefono}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Teléfono</Text>
+                <TextInput
+                    placeholder="Ingrese el teléfono"
+                    value={telefono}
+                    onChangeText={setTelefono}
+                    style={styles.input}
+                    keyboardType="phone-pad"
+                />
+            </View>
 
-            <TextInput
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Correo electrónico</Text>
+                <TextInput
+                    placeholder="Ingrese el correo electrónico"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                    keyboardType="email-address"
+                />
+            </View>
 
-            <TextInput
-                placeholder="Nombre del técnico"
-                value={tecnico}
-                onChangeText={setTecnico}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Nombre del técnico</Text>
+                <TextInput
+                    placeholder="Ingrese el nombre del técnico"
+                    value={tecnico}
+                    onChangeText={setTecnico}
+                    style={styles.input}
+                />
+            </View>
 
-            <TextInput
-                placeholder="Dirección"
-                value={dire}
-                onChangeText={setDire}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Dirección</Text>
+                <TextInput
+                    placeholder="Ingrese la dirección"
+                    value={dire}
+                    onChangeText={setDire}
+                    style={styles.input}
+                />
+            </View>
 
-            <TextInput
-                placeholder="Pie de página"
-                value={piePag}
-                onChangeText={setPiePag}
-                style={styles.input}
-            />
+            <View style={styles.inputGroup}>
+                <Text style={styles.label}>Pie de página del PDF</Text>
+                <TextInput
+                    placeholder="Texto que aparecerá al pie del documento"
+                    value={piePag}
+                    onChangeText={setPiePag}
+                    style={[styles.input, styles.multilineInput]}
+                    multiline
+                    textAlignVertical="top"
+                />
+            </View>
 
-            {logo && (
+            <View style={styles.inputGroup}>
 
-                <Image
-                    source={{ uri: `data:image/png;base64,${logo}` }}
-                    style={styles.logo}
+                <Text style={styles.label}>Logo de la empresa</Text>
+
+                {logo && (
+                    <View style={styles.imageCard}>
+
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={eliminarLogo}
+                        >
+                            <Text style={styles.deleteButtonText}>×</Text>
+                        </TouchableOpacity>
+
+                        <Image
+                            source={{ uri: `data:image/png;base64,${logo}` }}
+                            style={styles.logo}
+                        />
+
+                    </View>
+                )}
+
+                <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={seleccionarLogo}
+                >
+                    <Text style={styles.buttonText}>Seleccionar Logo</Text>
+                </TouchableOpacity>
+
+            </View>
+
+
+            <View style={styles.inputGroup}>
+
+                <Text style={styles.label}>Firma del técnico</Text>
+                {firma && (
+                    <View style={styles.imageCard}>
+
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={eliminarFirma}
+                        >
+                            <Text style={styles.deleteButtonText}>×</Text>
+                        </TouchableOpacity>
+
+                        <Image
+                            source={{ uri: `data:image/png;base64,${firma}` }}
+                            style={styles.firma}
+                        />
+
+                    </View>
+                )}
+
+
+
+                <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={seleccionarFirma}
+                >
+                    <Text style={styles.buttonText}>Seleccionar Firma</Text>
+                </TouchableOpacity>
+
+            </View>
+
+
+            <View style={styles.switchContainer}>
+
+                <View style={styles.switchInfo}>
+
+                    <Text style={styles.switchTitle}>
+                        Logo como marca de agua
+                    </Text>
+
+                    <Text style={styles.switchDescription}>
+                        Mostrar el logo de la empresa de forma tenue en el fondo del PDF.
+                    </Text>
+
+                </View>
+
+                <Switch
+                    value={waterMark}
+                    onValueChange={setWaterMark}
+                    trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                    thumbColor={waterMark ? "#E1890A" : "#FFFFFF"}
                 />
 
-            )}
+            </View>
 
+            <View style={styles.infoBox}>
 
-            <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={seleccionarLogo}
-            >
-                <Text style={styles.buttonText}>Seleccionar Logo</Text>
-            </TouchableOpacity>
+                <Text style={styles.infoTitle}>
+                    Recomendaciones
+                </Text>
 
-            {firma && (
+                <Text style={styles.infoText}>
+                    • Utilice un logo con fondo transparente o blanco para obtener una
+                    mejor integración en el encabezado y la marca de agua del PDF.
+                </Text>
 
-                <Image
-                    source={{ uri: `data:image/png;base64,${firma}` }}
-                    style={styles.firma}
-                />
+                <Text style={styles.infoText}>
+                    • La firma se visualizará con mayor calidad si posee un fondo
+                    transparente o completamente blanco.
+                </Text>
 
-            )}
+                <Text style={styles.infoText}>
+                    • Antes de guardar la configuración puede utilizar la vista previa
+                    para verificar el aspecto final del documento.
+                </Text>
 
-            <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={seleccionarFirma}
-            >
-                <Text style={styles.buttonText}>Seleccionar Firma</Text>
-            </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
                 style={styles.secondaryButton}
                 onPress={verPreview}
             >
-                <Text style={styles.buttonText}>Vista previa</Text>
+                <Text style={styles.buttonText}>
+                    Vista previa
+                </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
                 style={styles.primaryButton}
                 onPress={guardar}
             >
-                <Text style={styles.buttonText}>Guardar Configuración</Text>
+                <Text style={styles.buttonText}>
+                    Guardar Configuración
+                </Text>
             </TouchableOpacity>
 
         </ScrollView>
@@ -312,5 +432,129 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginVertical: 15,
     },
+    inputGroup: {
+        marginBottom: 18,
+    },
 
+    label: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#8B6734",
+        marginBottom: 6,
+        marginLeft: 2,
+        letterSpacing: 0.3,
+    },
+
+    input: {
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 15,
+        color: "#333",
+    },
+
+    multilineInput: {
+        minHeight: 90,
+    },
+    switchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "#FFFFFF",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#E8E2D8",
+        padding: 15,
+        marginTop: 15,
+    },
+
+    switchInfo: {
+        flex: 1,
+        paddingRight: 15,
+    },
+
+    switchTitle: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: "#8B6734",
+    },
+
+    switchDescription: {
+        marginTop: 4,
+        fontSize: 13,
+        color: "#777",
+        lineHeight: 18,
+    },
+    imageCard: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#E7E2DB",
+        padding: 16,
+        marginTop: 12,
+        marginBottom: 8,
+        alignItems: "center",
+        position: "relative",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
+        elevation: 2,
+    },
+
+    deleteButton: {
+        position: "absolute",
+        top: 8,
+        right: 8,
+
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+
+        backgroundColor: "#D9534F",
+
+        justifyContent: "center",
+        alignItems: "center",
+
+        zIndex: 10,
+    },
+
+    deleteButtonText: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold",
+        lineHeight: 20,
+    },
+
+    imagePlaceholder: {
+        color: "#999",
+        fontSize: 14,
+        fontStyle: "italic",
+    },
+
+    infoBox: {
+        backgroundColor: "#FFF8ED",
+        borderLeftWidth: 5,
+        borderLeftColor: "#E1890A",
+        borderRadius: 10,
+        padding: 15,
+        marginTop: 25,
+        marginBottom: 5,
+    },
+
+    infoTitle: {
+        color: "#8B6734",
+        fontWeight: "700",
+        fontSize: 16,
+        marginBottom: 10,
+    },
+
+    infoText: {
+        color: "#555",
+        fontSize: 14,
+        lineHeight: 22,
+        marginBottom: 8,
+    },
 });

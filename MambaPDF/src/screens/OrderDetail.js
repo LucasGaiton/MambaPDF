@@ -18,6 +18,7 @@ export default function OrderDetail({ route, navigation }) {
     await pdfService({
       orden,
       plantilla,
+
     });
 
   }
@@ -73,7 +74,7 @@ export default function OrderDetail({ route, navigation }) {
 
             if (campo.tipo === "boolean") {
               valor = valor ? "Sí" : "No";
-            } 
+            }
 
 
 

@@ -13,10 +13,12 @@ export async function pdfService({ orden, plantilla }) {
     const html = generarHTMLPDF(
         config,
         orden,
-        plantilla
+        plantilla,
     );
-   
-    
+    console.log("watermark:", config.waterMark);
+
+
+
     if (Platform.OS === "web") {
         const ventana = window.open("", "_blank");
         ventana.document.write(html);
@@ -58,7 +60,6 @@ export async function pdfService({ orden, plantilla }) {
 }
 export function generarHTMLPDF(config, orden, plantilla) {
 
-
     const seccionesHTML = plantilla.secciones
         .map(
             (seccion) => `
@@ -73,12 +74,20 @@ export function generarHTMLPDF(config, orden, plantilla) {
 
           ${seccion.campos
                     .map(
-                        (campo) => `
+                        (campo) => {
+                            let valor = orden.valores[campo.id]
+                            console.log("Este es el valor", valor);
+
+                            if (valor == true) valor = "Si"
+                            else if (valor == false) valor = "No"
+
+                            return (`
             <tr>
               <td class="campo">${campo.etiqueta}</td>
-              <td>${orden.valores[campo.id] || ""}</td>
+              <td>${valor || ""}</td>
             </tr>
-          `
+          `)
+                        }
                     )
                     .join("")}
 
@@ -88,6 +97,8 @@ export function generarHTMLPDF(config, orden, plantilla) {
     `
         )
         .join("");
+
+
     const contenidoHTML =
         `
   <!DOCTYPE html>
@@ -268,14 +279,17 @@ color: #777;
 
 <body>
 
-<div class="watermark">
-
-    ${config?.empresaLogo
-            ? `<img src="data:image/png;base64,${config.empresaLogo}" />`
+${config?.waterMark === true
+            ? `
+        <div class="watermark">
+            ${config?.empresaLogo
+                ? `<img src="data:image/png;base64,${config.empresaLogo}" />`
+                : ""
+            }
+        </div>
+        `
             : ""
         }
-
-  </div>
 
 <div class="contenido">
 
@@ -381,6 +395,8 @@ ${config?.piePagina || ""}
 </body>
 </html>
         `
+
+
     return contenidoHTML;
 
 }

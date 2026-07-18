@@ -12,15 +12,16 @@ export default function OrderDetail({ route, navigation }) {
 
   const { orden, plantilla } = route.params;
 
-const generar = async ()=>{
-  console.log("Lo hace");
-  
-  await pdfService({
-    orden,
-    plantilla,
-});
+  const generar = async () => {
+    console.log("Lo hace");
 
-}
+    await pdfService({
+      orden,
+      plantilla,
+    });
+
+  }
+
 
   return (
 
@@ -65,21 +66,41 @@ const generar = async ()=>{
             {seccion.titulo}
           </Text>
 
-          {seccion.campos.map((campo) => (
+          {seccion.campos.map((campo) => {
 
-            <View key={campo.id} style={styles.campoRow}>
+            let valor = orden.valores[campo.id] ?? "-";
+            const esLargo = valor.length > 35;
 
-              <Text style={styles.campoLabel}>
-                {campo.etiqueta}
-              </Text>
+            if (campo.tipo === "boolean") {
+              valor = valor ? "Sí" : "No";
+            } 
 
-              <Text style={styles.campoValor}>
-                {orden.valores[campo.id] || "-"}
-              </Text>
 
-            </View>
 
-          ))}
+
+            return (
+              (
+
+                <View
+                  key={campo.id}
+                  style={[
+                    styles.campoRow,
+                    esLargo && styles.campoRowVertical
+                  ]}
+                >
+                  <Text style={styles.campoLabel}>
+                    {campo.etiqueta}
+                  </Text>
+
+                  <Text style={styles.campoValor}>
+                    {valor}
+                  </Text>
+                </View>
+
+              )
+            )
+
+          })}
 
         </View>
 
@@ -156,18 +177,26 @@ const styles = StyleSheet.create({
   campoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#EEE",
-    paddingVertical: 6
+  },
+
+  campoRowVertical: {
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
 
   campoLabel: {
     fontWeight: "600",
-    color: "#333"
+    color: "#333",
   },
 
   campoValor: {
-    color: "#555"
+    color: "#555",
+    marginTop: 4,
+    lineHeight: 22,
   },
 
   botonPDF: {

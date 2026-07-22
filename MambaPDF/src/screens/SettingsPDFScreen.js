@@ -8,7 +8,9 @@ import {
     ScrollView,
     Alert,
     Image,
-    Switch
+    Switch,
+    KeyboardAvoidingView,
+    Platform
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
@@ -168,204 +170,210 @@ export default function SettingsPDFScreen({ navigation }) {
     };
 
     return (
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
 
-        <ScrollView contentContainerStyle={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled"
+            >
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Nombre de la empresa</Text>
+                    <TextInput
+                        placeholder="Ingrese el nombre de la empresa"
+                        value={empresa}
+                        onChangeText={setEmpresa}
+                        style={styles.input}
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Nombre de la empresa</Text>
-                <TextInput
-                    placeholder="Ingrese el nombre de la empresa"
-                    value={empresa}
-                    onChangeText={setEmpresa}
-                    style={styles.input}
-                />
-            </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Teléfono</Text>
+                    <TextInput
+                        placeholder="Ingrese el teléfono"
+                        value={telefono}
+                        onChangeText={setTelefono}
+                        style={styles.input}
+                        keyboardType="phone-pad"
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Teléfono</Text>
-                <TextInput
-                    placeholder="Ingrese el teléfono"
-                    value={telefono}
-                    onChangeText={setTelefono}
-                    style={styles.input}
-                    keyboardType="phone-pad"
-                />
-            </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Correo electrónico</Text>
+                    <TextInput
+                        placeholder="Ingrese el correo electrónico"
+                        value={email}
+                        onChangeText={setEmail}
+                        style={styles.input}
+                        keyboardType="email-address"
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Correo electrónico</Text>
-                <TextInput
-                    placeholder="Ingrese el correo electrónico"
-                    value={email}
-                    onChangeText={setEmail}
-                    style={styles.input}
-                    keyboardType="email-address"
-                />
-            </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Nombre del técnico</Text>
+                    <TextInput
+                        placeholder="Ingrese el nombre del técnico"
+                        value={tecnico}
+                        onChangeText={setTecnico}
+                        style={styles.input}
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Nombre del técnico</Text>
-                <TextInput
-                    placeholder="Ingrese el nombre del técnico"
-                    value={tecnico}
-                    onChangeText={setTecnico}
-                    style={styles.input}
-                />
-            </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Dirección</Text>
+                    <TextInput
+                        placeholder="Ingrese la dirección"
+                        value={dire}
+                        onChangeText={setDire}
+                        style={styles.input}
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Dirección</Text>
-                <TextInput
-                    placeholder="Ingrese la dirección"
-                    value={dire}
-                    onChangeText={setDire}
-                    style={styles.input}
-                />
-            </View>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Pie de página del PDF</Text>
+                    <TextInput
+                        placeholder="Texto que aparecerá al pie del documento"
+                        value={piePag}
+                        onChangeText={setPiePag}
+                        style={[styles.input, styles.multilineInput]}
+                        multiline
+                        textAlignVertical="top"
+                    />
+                </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.label}>Pie de página del PDF</Text>
-                <TextInput
-                    placeholder="Texto que aparecerá al pie del documento"
-                    value={piePag}
-                    onChangeText={setPiePag}
-                    style={[styles.input, styles.multilineInput]}
-                    multiline
-                    textAlignVertical="top"
-                />
-            </View>
+                <View style={styles.inputGroup}>
 
-            <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Logo de la empresa</Text>
 
-                <Text style={styles.label}>Logo de la empresa</Text>
+                    {logo && (
+                        <View style={styles.imageCard}>
 
-                {logo && (
-                    <View style={styles.imageCard}>
+                            <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={eliminarLogo}
+                            >
+                                <Text style={styles.deleteButtonText}>×</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.deleteButton}
-                            onPress={eliminarLogo}
-                        >
-                            <Text style={styles.deleteButtonText}>×</Text>
-                        </TouchableOpacity>
+                            <Image
+                                source={{ uri: `data:image/png;base64,${logo}` }}
+                                style={styles.logo}
+                            />
 
-                        <Image
-                            source={{ uri: `data:image/png;base64,${logo}` }}
-                            style={styles.logo}
-                        />
+                        </View>
+                    )}
+
+                    <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={seleccionarLogo}
+                    >
+                        <Text style={styles.buttonText}>Seleccionar Logo</Text>
+                    </TouchableOpacity>
+
+                </View>
+
+
+                <View style={styles.inputGroup}>
+
+                    <Text style={styles.label}>Firma del técnico</Text>
+                    {firma && (
+                        <View style={styles.imageCard}>
+
+                            <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={eliminarFirma}
+                            >
+                                <Text style={styles.deleteButtonText}>×</Text>
+                            </TouchableOpacity>
+
+                            <Image
+                                source={{ uri: `data:image/png;base64,${firma}` }}
+                                style={styles.firma}
+                            />
+
+                        </View>
+                    )}
+
+
+
+                    <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={seleccionarFirma}
+                    >
+                        <Text style={styles.buttonText}>Seleccionar Firma</Text>
+                    </TouchableOpacity>
+
+                </View>
+
+
+                <View style={styles.switchContainer}>
+
+                    <View style={styles.switchInfo}>
+
+                        <Text style={styles.switchTitle}>
+                            Logo como marca de agua
+                        </Text>
+
+                        <Text style={styles.switchDescription}>
+                            Mostrar el logo de la empresa de forma tenue en el fondo del PDF.
+                        </Text>
 
                     </View>
-                )}
 
-                <TouchableOpacity
-                    style={styles.secondaryButton}
-                    onPress={seleccionarLogo}
-                >
-                    <Text style={styles.buttonText}>Seleccionar Logo</Text>
-                </TouchableOpacity>
+                    <Switch
+                        value={waterMark}
+                        onValueChange={setWaterMark}
+                        trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                        thumbColor={waterMark ? "#E1890A" : "#FFFFFF"}
+                    />
 
-            </View>
+                </View>
 
+                <View style={styles.infoBox}>
 
-            <View style={styles.inputGroup}>
-
-                <Text style={styles.label}>Firma del técnico</Text>
-                {firma && (
-                    <View style={styles.imageCard}>
-
-                        <TouchableOpacity
-                            style={styles.deleteButton}
-                            onPress={eliminarFirma}
-                        >
-                            <Text style={styles.deleteButtonText}>×</Text>
-                        </TouchableOpacity>
-
-                        <Image
-                            source={{ uri: `data:image/png;base64,${firma}` }}
-                            style={styles.firma}
-                        />
-
-                    </View>
-                )}
-
-
-
-                <TouchableOpacity
-                    style={styles.secondaryButton}
-                    onPress={seleccionarFirma}
-                >
-                    <Text style={styles.buttonText}>Seleccionar Firma</Text>
-                </TouchableOpacity>
-
-            </View>
-
-
-            <View style={styles.switchContainer}>
-
-                <View style={styles.switchInfo}>
-
-                    <Text style={styles.switchTitle}>
-                        Logo como marca de agua
+                    <Text style={styles.infoTitle}>
+                        Recomendaciones
                     </Text>
 
-                    <Text style={styles.switchDescription}>
-                        Mostrar el logo de la empresa de forma tenue en el fondo del PDF.
+                    <Text style={styles.infoText}>
+                        • Utilice un logo con fondo transparente o blanco para obtener una
+                        mejor integración en el encabezado y la marca de agua del PDF.
+                    </Text>
+
+                    <Text style={styles.infoText}>
+                        • La firma se visualizará con mayor calidad si posee un fondo
+                        transparente o completamente blanco.
+                    </Text>
+
+                    <Text style={styles.infoText}>
+                        • Antes de guardar la configuración puede utilizar la vista previa
+                        para verificar el aspecto final del documento.
                     </Text>
 
                 </View>
 
-                <Switch
-                    value={waterMark}
-                    onValueChange={setWaterMark}
-                    trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
-                    thumbColor={waterMark ? "#E1890A" : "#FFFFFF"}
-                />
+                <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={verPreview}
+                >
+                    <Text style={styles.buttonText}>
+                        Vista previa
+                    </Text>
+                </TouchableOpacity>
 
-            </View>
+                <TouchableOpacity
+                    style={styles.primaryButton}
+                    onPress={guardar}
+                >
+                    <Text style={styles.buttonText}>
+                        Guardar Configuración
+                    </Text>
+                </TouchableOpacity>
 
-            <View style={styles.infoBox}>
-
-                <Text style={styles.infoTitle}>
-                    Recomendaciones
-                </Text>
-
-                <Text style={styles.infoText}>
-                    • Utilice un logo con fondo transparente o blanco para obtener una
-                    mejor integración en el encabezado y la marca de agua del PDF.
-                </Text>
-
-                <Text style={styles.infoText}>
-                    • La firma se visualizará con mayor calidad si posee un fondo
-                    transparente o completamente blanco.
-                </Text>
-
-                <Text style={styles.infoText}>
-                    • Antes de guardar la configuración puede utilizar la vista previa
-                    para verificar el aspecto final del documento.
-                </Text>
-
-            </View>
-
-            <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={verPreview}
-            >
-                <Text style={styles.buttonText}>
-                    Vista previa
-                </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                style={styles.primaryButton}
-                onPress={guardar}
-            >
-                <Text style={styles.buttonText}>
-                    Guardar Configuración
-                </Text>
-            </TouchableOpacity>
-
-        </ScrollView>
-
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 
 }

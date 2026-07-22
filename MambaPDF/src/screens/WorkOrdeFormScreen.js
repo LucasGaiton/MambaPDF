@@ -191,14 +191,14 @@ export default function WorkOrderFormScreen({ route, navigation }) {
     };
 
     const guardarYGenerarPDFHandler = async () => {
- 
+
         const nuevaOrden = await guardarOrdenHandler();
- 
+
         await pdfService({
             orden: nuevaOrden,
             plantilla,
         });
- 
+
     }
     /**
     * Abre el selector de fecha para un campo específico.
@@ -259,12 +259,16 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             case "boolean":
 
                 return (
+
                     <View style={styles.switchContainer}>
                         <Switch
                             value={valores[campo.id]}
                             onValueChange={(valor) =>
                                 actualizarValor(campo.id, valor)
                             }
+                            trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                            thumbColor={valores[campo.id] ? "#E1890A" : "#FFFFFF"}
+
                         />
                     </View>
                 );
@@ -383,7 +387,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
                     {seccion.campos.map((campo) => (
 
-                        <View key={campo.id} style={styles.inputContainer}>
+                        <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
 
                             <Text style={styles.label}>
                                 {campo.etiqueta}
@@ -413,8 +417,8 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 <Text style={styles.botonTexto}>
                     Guardar y Generar PFD
                 </Text>
-            </TouchableOpacity> }
-            
+            </TouchableOpacity>}
+
 
         </ScrollView>
 
@@ -462,11 +466,19 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
 
+    inputBoleanCont: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: 15,
+        justifyContent: 'space-between',
+    },
+
+
     label: {
         marginBottom: 6,
         fontWeight: "600",
         fontSize: 15,
-        color: "#333"
+        color: "#333",
     },
 
     input: {

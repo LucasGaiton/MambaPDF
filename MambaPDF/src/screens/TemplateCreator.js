@@ -6,7 +6,9 @@ import {
     StyleSheet,
     Alert,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform
 } from "react-native";
 
 import { useState, useEffect } from "react";
@@ -263,8 +265,15 @@ export default function TemplateCreator({ navigation, route }) {
 
     return (
 
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+       <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
 
+        <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+        >
 
             <TextInput
                 placeholder="Nombre de la plantilla"
@@ -332,7 +341,7 @@ export default function TemplateCreator({ navigation, route }) {
 
                     <Picker.Item label="Texto" value="texto" />
                     <Picker.Item label="Fecha" value="fecha" />
-                    <Picker.Item label="Sí / No" value="boolean" />
+                    <Picker.Item label="Sí / No" value="Si/No" />
                     <Picker.Item label="Selección de Opciones" value="opciones" />
 
                 </Picker>
@@ -464,6 +473,7 @@ export default function TemplateCreator({ navigation, route }) {
             </TouchableOpacity>
 
         </ScrollView>
+            </KeyboardAvoidingView>
 
     );
 

@@ -212,9 +212,9 @@ export default function SettingsPDFScreen({ navigation }) {
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Nombre del técnico</Text>
+                    <Text style={styles.label}>Nombre del responsable</Text>
                     <TextInput
-                        placeholder="Ingrese el nombre del técnico"
+                        placeholder="Ingrese el nombre del responsable"
                         value={tecnico}
                         onChangeText={setTecnico}
                         style={styles.input}

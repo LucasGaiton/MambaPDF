@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { listarPlantillas, eliminarPlantilla } from "../storage/storage";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SelectTemplate({ navigation }) {
 
@@ -75,10 +76,29 @@ export default function SelectTemplate({ navigation }) {
                 <TouchableOpacity
                     onPress={() => seleccionarPlantilla(item)}
                 >
+                    <View style={styles.contTitulo}>
 
-                    <Text style={styles.titulo}>
-                        {item.nombre}
-                    </Text>
+                        <Text style={styles.titulo}>
+                            {item.nombre}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate(
+                                    "Crear Plantilla",
+                                    {
+                                        plantilla: item
+                                    }
+                                )
+                            }
+                        >
+                            <Ionicons
+                                name="create-outline"
+                                size={20}
+                                color="#8B6734"
+                            />
+                        </TouchableOpacity>
+
+                    </View>
 
                     <Text style={styles.info}>
                         {totalSecciones} secciones
@@ -98,6 +118,7 @@ export default function SelectTemplate({ navigation }) {
                         Eliminar
                     </Text>
                 </TouchableOpacity>
+
 
             </View>
 
@@ -141,6 +162,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 6,
         elevation: 3
+    },
+    contTitulo: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+
     },
 
     titulo: {

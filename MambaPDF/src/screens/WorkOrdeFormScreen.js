@@ -1,4 +1,19 @@
-import { useState } from "react";
+/**
+ * =============================================================================
+ * WorkOrderFormScreen
+ * =============================================================================
+ * Pantalla encargada de la creación y edición de órdenes de trabajo.
+ *
+ * Funcionalidades principales:
+ *  - Generar una nueva orden a partir de una plantilla.
+ *  - Editar una orden existente.
+ *  - Validar el nombre de la orden.
+ *  - Gestionar distintos tipos de campos dinámicos.
+ *  - Guardar la orden en el almacenamiento local.
+ * =============================================================================
+ */
+
+import { useState, useEffect } from "react";
 import {
     ScrollView,
     Text,
@@ -7,17 +22,52 @@ import {
     StyleSheet,
     Button,
     Switch,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from "react-native";
 
 import { guardarOrden } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
+import { Ionicons } from "@expo/vector-icons";
+import { pdfService } from "../services/pdfService";
 
 export default function WorkOrderFormScreen({ route, navigation }) {
 
-    const { plantilla } = route.params;
+    /**
+     * Datos recibidos desde la navegación.
+     *
+     * plantilla → estructura utilizada para generar la orden.
+     * orden → solo existe cuando se está editando una orden.
+     */
+    const { plantilla, orden } = route.params;
+    /**
+    * Indica si la pantalla está en modo edición.
+    */
+    const editando = !!orden
 
+    /**
+     * Cambia dinámicamente el título de la pantalla dependiendo
+     * del caso de uso (crear o editar).
+     */
+    useEffect(() => {
+
+        navigation.setOptions({
+            title: orden
+                ? "Editar Orden"
+                : "Crear Orden"
+        });
+
+    }, [navigation, orden]);
+
+    /**
+     * Genera el estado inicial de todos los campos de la plantilla.
+     *
+     * Cada tipo de campo posee un valor por defecto:
+     *  - boolean → false
+     *  - opciones → primera opción disponible
+     *  - resto → cadena vacía
+     */
     const getInitialState = () => {
 
         const initialState = {};
@@ -45,13 +95,37 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         return initialState;
 
     };
+    //==========================================================================
+    //                           Estados
+    //==========================================================================
 
-    const [valores, setValores] = useState(getInitialState());
+    /**
+     * Valores de todos los campos dinámicos.
+     *
+     * Si se está editando una orden se cargan los datos existentes,
+     * de lo contrario se inicializan con los valores por defecto.
+     */
+    const [valores, setValores] = useState(
+        orden ? orden.valores : getInitialState()
+    );
 
+    /**
+     * Nombre identificador de la orden.
+     */
+    const [nombreOrden, setNombreOrden] = useState(
+        orden ? orden.nombre : ""
+    );
+
+    /**
+     * Estados utilizados por el selector de fechas.
+     */
     const [openDatePicker, setOpenDatePicker] = useState(false);
     const [currentDateField, setCurrentDateField] = useState(null);
     const [selectedDate, setSelectedDate] = useState(undefined);
 
+    /**
+     * Actualiza el valor de un campo dinámico.
+     */
     const actualizarValor = (campoId, valor) => {
 
         setValores(prev => ({
@@ -61,33 +135,85 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
     };
 
+    /**
+     * Guarda una nueva orden o actualiza una existente.
+     *
+     * Validaciones:
+     *  - El nombre de la orden es obligatorio.
+     *
+     * Si se encuentra en modo edición:
+     *  - Conserva el ID.
+     *  - Conserva la fecha de creación.
+     *
+     * Caso contrario:
+     *  - Genera un nuevo ID.
+     *  - Asigna la fecha actual.
+     */
     const guardarOrdenHandler = async () => {
+
+        if (!nombreOrden.trim()) {
+            Alert.alert(
+                "Error",
+                "Debe ingresar un nombre para la orden."
+            );
+            return;
+        }
 
         const nuevaOrden = {
 
-            id: Date.now().toString(),
+            id: editando
+                ? orden.id
+                : Date.now().toString(),
+            nombre: nombreOrden.trim(),
             plantillaId: plantilla.id,
             plantillaNombre: plantilla.nombre,
-            fechaCreacion: new Date().toISOString(),
+            fechaCreacion: editando
+                ? orden.fechaCreacion
+                : new Date().toISOString(),
             valores: valores
 
         };
 
+
         await guardarOrden(nuevaOrden.id, nuevaOrden);
 
-        console.log("Orden guardada:", nuevaOrden);
+        console.log(editando ? "Orden editada:" : "Orden guardada:", nuevaOrden);
 
-        navigation.goBack();
+        Alert.alert(
+            "Éxito",
+            orden
+                ? "Orden actualizada"
+                : "Orden guardada"
+        );
+        navigation.navigate("Home")
+        return nuevaOrden
 
     };
+
+    const guardarYGenerarPDFHandler = async () => {
+
+        const nuevaOrden = await guardarOrdenHandler();
+
+        await pdfService({
+            orden: nuevaOrden,
+            plantilla,
+        });
+
+    }
+    /**
+    * Abre el selector de fecha para un campo específico.
+    */
 
     const abrirDatePicker = (campoId) => {
-
         setCurrentDateField(campoId);
         setOpenDatePicker(true);
-
     };
 
+    /**
+     * Se ejecuta cuando el usuario selecciona una fecha.
+     *
+     * Guarda la fecha en el campo correspondiente.
+     */
     const onConfirmDate = ({ date }) => {
 
         setOpenDatePicker(false);
@@ -104,6 +230,15 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
     };
 
+    /**
+     * Renderiza dinámicamente un campo según su tipo.
+     *
+     * Tipos soportados:
+     *  - texto
+     *  - boolean
+     *  - fecha
+     *  - opciones
+     */
     const renderCampo = (campo) => {
 
         switch (campo.tipo) {
@@ -124,12 +259,16 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             case "boolean":
 
                 return (
+
                     <View style={styles.switchContainer}>
                         <Switch
                             value={valores[campo.id]}
                             onValueChange={(valor) =>
                                 actualizarValor(campo.id, valor)
                             }
+                            trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                            thumbColor={valores[campo.id] ? "#E1890A" : "#FFFFFF"}
+
                         />
                     </View>
                 );
@@ -202,6 +341,42 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 {plantilla.nombre}
             </Text>
 
+            {!editando && (
+                <TouchableOpacity
+                    style={styles.botonEditar}
+                    onPress={() =>
+                        navigation.navigate("Crear Plantilla", {
+                            plantilla,
+                        })
+                    }
+                >
+                    <Ionicons
+                        name="create-outline"
+                        size={18}
+                        color="#8B6734"
+                    />
+
+                    <Text style={styles.botonEditarTexto}>
+                        Editar plantilla
+                    </Text>
+                </TouchableOpacity>
+            )}
+
+            <View style={styles.inputContainer}>
+
+                <Text style={styles.label}>
+                    Nombre de la orden
+                </Text>
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Instalación Router - Cliente Pérez"
+                    value={nombreOrden}
+                    onChangeText={setNombreOrden}
+                />
+
+            </View>
+
             {plantilla.secciones.map((seccion) => (
 
                 <View key={seccion.id} style={styles.seccionContainer}>
@@ -212,7 +387,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
                     {seccion.campos.map((campo) => (
 
-                        <View key={campo.id} style={styles.inputContainer}>
+                        <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
 
                             <Text style={styles.label}>
                                 {campo.etiqueta}
@@ -231,8 +406,19 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 style={styles.boton}
                 onPress={guardarOrdenHandler}
             >
-                <Text style={styles.botonTexto}>Guardar Orden</Text>
+                <Text style={styles.botonTexto}>
+                    {editando ? "Guardar Cambios" : "Guardar Orden"}
+                </Text>
             </TouchableOpacity>
+            {editando ? <></> : <TouchableOpacity
+                style={styles.boton}
+                onPress={guardarYGenerarPDFHandler}
+            >
+                <Text style={styles.botonTexto}>
+                    Guardar y Generar PFD
+                </Text>
+            </TouchableOpacity>}
+
 
         </ScrollView>
 
@@ -280,11 +466,19 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
 
+    inputBoleanCont: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: 15,
+        justifyContent: 'space-between',
+    },
+
+
     label: {
         marginBottom: 6,
         fontWeight: "600",
         fontSize: 15,
-        color: "#333"
+        color: "#333",
     },
 
     input: {
@@ -325,6 +519,27 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 12,
         elevation: 3
+    },
+    botonEditar: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+
+        backgroundColor: "#FFF8ED",
+        borderWidth: 1,
+        borderColor: "#E8C68B",
+
+        paddingVertical: 12,
+        borderRadius: 8,
+
+        marginBottom: 25,
+    },
+
+    botonEditarTexto: {
+        marginLeft: 8,
+        fontSize: 15,
+        fontWeight: "600",
+        color: "#8B6734",
     },
 
 });

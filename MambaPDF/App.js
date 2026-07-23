@@ -19,6 +19,7 @@ import TemplateCreator from "./src/screens/TemplateCreator";
 import SelectTemplate from "./src/screens/SelectTemplate";
 
 import SettingsPDFScreen from "./src/screens/SettingsPDFScreen";
+import { PreviewPDF } from "./src/screens/PreviewPDF";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,7 +80,7 @@ export default function App() {
           />
 
           <Stack.Screen
-            name="Historial"
+            name="Ordenes guardadas"
             component={HistoyOrders}
           />
 
@@ -97,6 +98,11 @@ export default function App() {
             name="Configurar PDF"
             component={SettingsPDFScreen}
           />
+          <Stack.Screen
+            name="Preview PDF"
+            component={PreviewPDF}
+          />
+
 
         </Stack.Navigator>
       </NavigationContainer>

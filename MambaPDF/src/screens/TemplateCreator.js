@@ -18,7 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function TemplateCreator({ navigation, route }) {
     const plantillaEditar = route?.params?.plantilla;
-    
+
     useEffect(() => {
 
         navigation.setOptions({
@@ -265,215 +265,219 @@ export default function TemplateCreator({ navigation, route }) {
 
     return (
 
-       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-
-        <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
 
-            <TextInput
-                placeholder="Nombre de la plantilla"
-                value={nombre}
-                onChangeText={setNombre}
-                style={styles.input}
-            />
-
-            {/* <Text style={styles.subtitulo}>Nueva Sección</Text> */}
-
-            <TextInput
-                placeholder="Nombre de la sección"
-                value={nombreSeccion}
-                onChangeText={setNombreSeccion}
-                style={styles.input}
-            />
-
-            <TouchableOpacity
-                style={styles.boton}
-                onPress={agregarSeccion}
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                keyboardShouldPersistTaps="handled"
             >
-                <Text style={styles.botonTexto}>Agregar Sección</Text>
-            </TouchableOpacity>
 
-            {secciones.length > 0 && (
+                <TextInput
+                    placeholder="Nombre de la plantilla"
+                    placeholderTextColor="#8C8C8C"
+                    value={nombre}
+                    onChangeText={setNombre}
+                    style={styles.input}
+                />
 
-                <>
-                    <Text style={styles.subtitulo}>Agregar campos a:</Text>
+                {/* <Text style={styles.subtitulo}>Nueva Sección</Text> */}
 
-                    <View style={styles.pickerContainer}>
+                <TextInput
+                    placeholder="Nombre de la sección"
+                    placeholderTextColor="#8C8C8C"
+                    value={nombreSeccion}
+                    onChangeText={setNombreSeccion}
+                    style={styles.input}
+                />
 
-                        <Picker
-                            style={styles.picker}
-                            selectedValue={seccionActiva}
-                            onValueChange={(value) => setSeccionActiva(value)}
-                        >
-
-                            {secciones.map(s => (
-                                <Picker.Item
-                                    key={s.id}
-                                    label={s.titulo}
-                                    value={s.id}
-                                />
-                            ))}
-
-                        </Picker>
-
-                    </View>
-
-                </>
-
-            )}
-
-            {/* <Text style={styles.subtitulo}>Nuevo Campo</Text> */}
-            <Text style={styles.subtitulo}>Tipo de campo:</Text>
-
-            <View style={styles.pickerContainer}>
-
-                <Picker
-                    outlineStyle="none"
-                    style={styles.picker}
-                    selectedValue={tipoCampo}
-                    onValueChange={(value) => setTipoCampo(value)}
+                <TouchableOpacity
+                    style={styles.boton}
+                    onPress={agregarSeccion}
                 >
+                    <Text style={styles.botonTexto}>Agregar Sección</Text>
+                </TouchableOpacity>
 
-                    <Picker.Item label="Texto" value="texto" />
-                    <Picker.Item label="Fecha" value="fecha" />
-                    <Picker.Item label="Sí / No" value="Si/No" />
-                    <Picker.Item label="Selección de Opciones" value="opciones" />
+                {secciones.length > 0 && (
 
-                </Picker>
+                    <>
+                        <Text style={styles.subtitulo}>Agregar campos a:</Text>
 
-            </View>
+                        <View style={styles.pickerContainer}>
 
-            <TextInput
-                placeholder="Nombre del campo"
-                value={nuevoCampo}
-                onChangeText={setNuevoCampo}
-                style={styles.input}
-            />
+                            <Picker
+                                style={styles.picker}
+                                selectedValue={seccionActiva}
+                                onValueChange={(value) => setSeccionActiva(value)}
+                            >
 
+                                {secciones.map(s => (
+                                    <Picker.Item
+                                        key={s.id}
+                                        label={s.titulo}
+                                        value={s.id}
+                                    />
+                                ))}
 
+                            </Picker>
 
-            {tipoCampo === "opciones" && (
+                        </View>
 
-                <View style={styles.opcionesContainer}>
+                    </>
 
-                    <Text style={styles.subtitulo}>
-                        Opciones para "{nuevoCampo || "campo"}"
-                    </Text>
+                )}
 
-                    <TextInput
-                        placeholder="Escriba una opción"
-                        value={opcionNueva}
-                        onChangeText={setOpcionNueva}
-                        style={styles.input}
-                    />
+                {/* <Text style={styles.subtitulo}>Nuevo Campo</Text> */}
+                <Text style={styles.subtitulo}>Tipo de campo:</Text>
 
-                    <TouchableOpacity
-                        style={styles.botonSecundario}
-                        onPress={agregarOpcion}
+                <View style={styles.pickerContainer}>
+
+                    <Picker
+                        outlineStyle="none"
+                        style={styles.picker}
+                        selectedValue={tipoCampo}
+                        onValueChange={(value) => setTipoCampo(value)}
                     >
-                        <Text style={styles.botonTexto}>Agregar Opción</Text>
-                    </TouchableOpacity>
 
-                    {opcionesPersonalizadas.map((op, index) => (
-                        <Text key={index} style={styles.opcionItem}>
-                            - {op}
-                        </Text>
-                    ))}
+                        <Picker.Item label="Texto" value="texto" />
+                        <Picker.Item label="Fecha" value="fecha" />
+                        <Picker.Item label="Sí / No" value="Si/No" />
+                        <Picker.Item label="Selección de Opciones" value="opciones" />
+
+                    </Picker>
 
                 </View>
 
-            )}
+                <TextInput
+                    placeholder="Nombre del campo"
+                    placeholderTextColor="#8C8C8C"
+                    value={nuevoCampo}
+                    onChangeText={setNuevoCampo}
+                    style={styles.input}
+                />
 
-            <TouchableOpacity
-                style={styles.boton}
-                onPress={agregarCampo}
-            >
-                <Text style={styles.botonTexto}>Agregar Campo</Text>
-            </TouchableOpacity>
 
-            {secciones.map(seccion => (
 
-                <View key={seccion.id} style={styles.seccionContainer}>
+                {tipoCampo === "opciones" && (
 
-                    <View style={styles.headerSeccion}>
+                    <View style={styles.opcionesContainer}>
 
-                        <Text style={styles.seccionTitulo}>
-                            {seccion.titulo}
+                        <Text style={styles.subtitulo}>
+                            Opciones para "{nuevoCampo || "campo"}"
                         </Text>
 
+                        <TextInput
+                            placeholder="Escriba una opción"
+                            placeholderTextColor="#8C8C8C"
+                            value={opcionNueva}
+                            onChangeText={setOpcionNueva}
+                            style={styles.input}
+                        />
+
                         <TouchableOpacity
-                            onPress={() => eliminarSeccion(seccion.id)}
+                            style={styles.botonSecundario}
+                            onPress={agregarOpcion}
                         >
-                            <Ionicons
-                                name="trash-outline"
-                                size={22}
-                                color="#C0392B"
-                            />
+                            <Text style={styles.botonTexto}>Agregar Opción</Text>
                         </TouchableOpacity>
+
+                        {opcionesPersonalizadas.map((op, index) => (
+                            <Text key={index} style={styles.opcionItem}>
+                                - {op}
+                            </Text>
+                        ))}
 
                     </View>
 
-                    {seccion.campos.map(campo => (
+                )}
 
-                        <View key={campo.id} style={styles.campoContainer}>
+                <TouchableOpacity
+                    style={styles.boton}
+                    onPress={agregarCampo}
+                >
+                    <Text style={styles.botonTexto}>Agregar Campo</Text>
+                </TouchableOpacity>
 
-                            <View style={styles.headerCampo}>
+                {secciones.map(seccion => (
 
-                                <Text style={styles.campo}>
-                                    • {campo.etiqueta} ({campo.tipo})
-                                </Text>
+                    <View key={seccion.id} style={styles.seccionContainer}>
 
-                                <TouchableOpacity
-                                    onPress={() => eliminarCampo(seccion.id, campo.id)}
-                                >
-                                    <Ionicons
-                                        name="close-circle"
-                                        size={22}
-                                        color="#C0392B"
-                                    />
-                                </TouchableOpacity>
+                        <View style={styles.headerSeccion}>
 
-                            </View>
+                            <Text style={styles.seccionTitulo}>
+                                {seccion.titulo}
+                            </Text>
 
-                            {campo.tipo === "opciones" && (
+                            <TouchableOpacity
+                                onPress={() => eliminarSeccion(seccion.id)}
+                            >
+                                <Ionicons
+                                    name="trash-outline"
+                                    size={22}
+                                    color="#C0392B"
+                                />
+                            </TouchableOpacity>
 
-                                <View style={styles.opcionesLista}>
+                        </View>
 
-                                    {campo.opciones.map((op, i) => (
-                                        <Text key={i} style={styles.opcionItem}>
-                                            - {op}
-                                        </Text>
-                                    ))}
+                        {seccion.campos.map(campo => (
+
+                            <View key={campo.id} style={styles.campoContainer}>
+
+                                <View style={styles.headerCampo}>
+
+                                    <Text style={styles.campo}>
+                                        • {campo.etiqueta} ({campo.tipo})
+                                    </Text>
+
+                                    <TouchableOpacity
+                                        onPress={() => eliminarCampo(seccion.id, campo.id)}
+                                    >
+                                        <Ionicons
+                                            name="close-circle"
+                                            size={22}
+                                            color="#C0392B"
+                                        />
+                                    </TouchableOpacity>
 
                                 </View>
 
-                            )}
-                        </View>
+                                {campo.tipo === "opciones" && (
 
-                    ))}
+                                    <View style={styles.opcionesLista}>
 
-                </View>
+                                        {campo.opciones.map((op, i) => (
+                                            <Text key={i} style={styles.opcionItem}>
+                                                - {op}
+                                            </Text>
+                                        ))}
 
-            ))}
+                                    </View>
 
-            <TouchableOpacity
-                style={styles.boton}
-                onPress={guardar}
-            >
-                <Text style={styles.botonTexto}>
-                    {plantillaEditar
-                        ? "Guardar cambios"
-                        : "Guardar plantilla"}
-                </Text>
-            </TouchableOpacity>
+                                )}
+                            </View>
 
-        </ScrollView>
-            </KeyboardAvoidingView>
+                        ))}
+
+                    </View>
+
+                ))}
+
+                <TouchableOpacity
+                    style={styles.boton}
+                    onPress={guardar}
+                >
+                    <Text style={styles.botonTexto}>
+                        {plantillaEditar
+                            ? "Guardar cambios"
+                            : "Guardar plantilla"}
+                    </Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+        </KeyboardAvoidingView>
 
     );
 

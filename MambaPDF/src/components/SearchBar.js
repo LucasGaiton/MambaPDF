@@ -65,6 +65,7 @@ export default function SearchBar({
             <TextInput
                 style={styles.input}
                 placeholder="Buscar por nombre..."
+                placeholderTextColor="#8C8C8C"
                 value={textoBusqueda}
                 onChangeText={setTextoBusqueda}
             />

@@ -183,6 +183,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Nombre de la empresa</Text>
                     <TextInput
                         placeholder="Ingrese el nombre de la empresa"
+                        placeholderTextColor="#8C8C8C"
                         value={empresa}
                         onChangeText={setEmpresa}
                         style={styles.input}
@@ -193,6 +194,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Teléfono</Text>
                     <TextInput
                         placeholder="Ingrese el teléfono"
+                        placeholderTextColor="#8C8C8C"
                         value={telefono}
                         onChangeText={setTelefono}
                         style={styles.input}
@@ -204,6 +206,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Correo electrónico</Text>
                     <TextInput
                         placeholder="Ingrese el correo electrónico"
+                        placeholderTextColor="#8C8C8C"
                         value={email}
                         onChangeText={setEmail}
                         style={styles.input}
@@ -215,6 +218,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Nombre del responsable</Text>
                     <TextInput
                         placeholder="Ingrese el nombre del responsable"
+                        placeholderTextColor="#8C8C8C"
                         value={tecnico}
                         onChangeText={setTecnico}
                         style={styles.input}
@@ -225,6 +229,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Dirección</Text>
                     <TextInput
                         placeholder="Ingrese la dirección"
+                        placeholderTextColor="#8C8C8C"
                         value={dire}
                         onChangeText={setDire}
                         style={styles.input}
@@ -235,6 +240,7 @@ export default function SettingsPDFScreen({ navigation }) {
                     <Text style={styles.label}>Pie de página del PDF</Text>
                     <TextInput
                         placeholder="Texto que aparecerá al pie del documento"
+                        placeholderTextColor="#8C8C8C"
                         value={piePag}
                         onChangeText={setPiePag}
                         style={[styles.input, styles.multilineInput]}

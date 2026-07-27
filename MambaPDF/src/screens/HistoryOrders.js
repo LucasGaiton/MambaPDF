@@ -1,21 +1,105 @@
+/**
+ * -----------------------------------------------------------------------------
+ * HistoryOrders.jsx
+ * -----------------------------------------------------------------------------
+ * Pantalla encargada de visualizar el historial de órdenes de trabajo
+ * almacenadas en la aplicación.
+ *
+ * Funcionalidades principales:
+ * - Listar todas las órdenes almacenadas.
+ * - Buscar órdenes por nombre.
+ * - Filtrar órdenes según la plantilla utilizada.
+ * - Abrir el detalle de una orden seleccionada.
+ * - Eliminar órdenes existentes.
+ *
+ * La información se obtiene desde el almacenamiento local mediante las
+ * funciones definidas en storage.js.
+ * -----------------------------------------------------------------------------
+ */
+
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { listarOrdenes, listarPlantillas, eliminarOrden } from "../storage/storage";
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    Alert
+} from "react-native";
+
+import {
+    listarOrdenes,
+    listarPlantillas,
+    eliminarOrden
+} from "../storage/storage";
+
 import SearchBar from "../components/SearchBar";
 
-
+/**
+ * -----------------------------------------------------------------------------
+ * HistoryOrders
+ * -----------------------------------------------------------------------------
+ * Pantalla que muestra el historial de órdenes creadas por el usuario.
+ *
+ * Permite:
+ * - Buscar órdenes por nombre.
+ * - Filtrar por plantilla.
+ * - Abrir el detalle de una orden.
+ * - Eliminar órdenes almacenadas.
+ *
+ * @param {Object} navigation Objeto de navegación proporcionado por React Navigation.
+ *
+ * @returns {JSX.Element}
+ * -----------------------------------------------------------------------------
+ */
 export default function HistoyOrders({ navigation }) {
 
+    /**
+     * -------------------------------------------------------------------------
+     * Lista completa de órdenes almacenadas.
+     * -------------------------------------------------------------------------
+     */
     const [ordenes, setOrdenes] = useState([]);
+
+    /**
+     * -------------------------------------------------------------------------
+     * Lista de plantillas disponibles.
+     * -------------------------------------------------------------------------
+     */
     const [plantillas, setPlantillas] = useState([]);
 
+    /**
+     * -------------------------------------------------------------------------
+     * Texto ingresado en el buscador.
+     * -------------------------------------------------------------------------
+     */
     const [textoBusqueda, setTextoBusqueda] = useState("");
+
+    /**
+     * -------------------------------------------------------------------------
+     * Identificador de la plantilla actualmente seleccionada como filtro.
+     * -------------------------------------------------------------------------
+     */
     const [plantillaSeleccionada, setPlantillaSeleccionada] = useState("");
 
+    /**
+     * -------------------------------------------------------------------------
+     * Carga inicial de datos.
+     *
+     * Al montar la pantalla se recuperan las órdenes y plantillas almacenadas.
+     * -------------------------------------------------------------------------
+     */
     useEffect(() => {
         cargarDatos();
     }, []);
 
+    /**
+     * -------------------------------------------------------------------------
+     * Recupera las órdenes y plantillas desde el almacenamiento local.
+     *
+     * Una vez obtenidos los datos, actualiza los estados correspondientes.
+     * -------------------------------------------------------------------------
+     */
     const cargarDatos = async () => {
 
         const ordenesData = await listarOrdenes();
@@ -26,10 +110,33 @@ export default function HistoyOrders({ navigation }) {
 
     };
 
+    /**
+     * -------------------------------------------------------------------------
+     * Obtiene la plantilla asociada a una orden.
+     *
+     * @param {Object} orden Orden seleccionada.
+     *
+     * @returns {Object|undefined} Plantilla correspondiente.
+     * -------------------------------------------------------------------------
+     */
     const obtenerPlantillaDeOrden = (orden) => {
-        return plantillas.find(p => p.id === orden.plantillaId);
+
+        return plantillas.find(
+            p => p.id === orden.plantillaId
+        );
+
     };
 
+    /**
+     * -------------------------------------------------------------------------
+     * Abre la pantalla de detalle de una orden.
+     *
+     * Además de enviar la orden seleccionada, también envía la plantilla
+     * correspondiente para poder renderizar correctamente toda la información.
+     *
+     * @param {Object} orden Orden seleccionada.
+     * -------------------------------------------------------------------------
+     */
     const abrirOrden = (orden) => {
 
         const plantilla = obtenerPlantillaDeOrden(orden);
@@ -41,31 +148,43 @@ export default function HistoyOrders({ navigation }) {
 
     };
 
+    /**
+     * -------------------------------------------------------------------------
+     * Elimina una orden del almacenamiento.
+     *
+     * Luego de eliminarla, vuelve a cargar los datos para actualizar la lista.
+     *
+     * @param {string} id Identificador de la orden.
+     * -------------------------------------------------------------------------
+     */
     const borrarOrden = async (id) => {
 
-        // Alert.alert(
-        //     "Eliminar orden",
-        //     "¿Seguro que quieres eliminar esta orden?",
-        //     [
-        //         { text: "Cancelar" },
-        //         {
-        //             text: "Eliminar",
-        //             style: "destructive",
-        //             onPress: async () => {
-        //                 await eliminarOrden(id);
-        //                 cargarDatos();
-        //             }
-        //         }
-        //     ]
-        // );
         await eliminarOrden(id);
+
         cargarDatos();
+
     };
 
+    /**
+     * -------------------------------------------------------------------------
+     * Renderiza una tarjeta correspondiente a una orden.
+     *
+     * Cada tarjeta permite:
+     * - Abrir el detalle de la orden.
+     * - Eliminarla.
+     *
+     * @param {Object} item Orden a renderizar.
+     *
+     * @returns {JSX.Element}
+     * -------------------------------------------------------------------------
+     */
     const renderOrden = ({ item }) => (
 
         <View style={styles.card}>
 
+            {/*--------------------------------------------------------------
+                Información principal de la orden
+            --------------------------------------------------------------*/}
             <TouchableOpacity
                 onPress={() => abrirOrden(item)}
             >
@@ -80,19 +199,35 @@ export default function HistoyOrders({ navigation }) {
 
             </TouchableOpacity>
 
+            {/*--------------------------------------------------------------
+                Botón para eliminar la orden
+            --------------------------------------------------------------*/}
             <TouchableOpacity
                 style={styles.botonEliminar}
                 onPress={() => borrarOrden(item.id)}
             >
+
                 <Text style={styles.textoEliminar}>
                     Eliminar
                 </Text>
+
             </TouchableOpacity>
 
         </View>
 
     );
 
+    /**
+     * -------------------------------------------------------------------------
+     * Lista de órdenes filtradas.
+     *
+     * Se aplican dos filtros:
+     * - Nombre de la orden.
+     * - Plantilla seleccionada.
+     *
+     * Ambos filtros son acumulativos.
+     * -------------------------------------------------------------------------
+     */
     const ordenesFiltradas = ordenes.filter((orden) => {
 
         const coincideNombre = orden.nombre
@@ -109,14 +244,26 @@ export default function HistoyOrders({ navigation }) {
 
     });
 
+    /**
+     * -------------------------------------------------------------------------
+     * Obtiene la plantilla actualmente seleccionada.
+     *
+     * Se utiliza únicamente para mostrar el nombre del filtro activo.
+     * -------------------------------------------------------------------------
+     */
     const plantillaActiva = plantillas.find(
+
         p => p.id === plantillaSeleccionada
+
     );
 
     return (
 
         <View style={styles.container}>
 
+            {/*--------------------------------------------------------------
+                Barra de búsqueda y filtros
+            --------------------------------------------------------------*/}
             <SearchBar
 
                 textoBusqueda={textoBusqueda}
@@ -129,18 +276,40 @@ export default function HistoyOrders({ navigation }) {
 
             />
 
+            {/*--------------------------------------------------------------
+                Indicador del filtro activo
+            --------------------------------------------------------------*/}
             {plantillaSeleccionada && (
+
                 <Text style={styles.mensajeFiltro}>
+
                     Filtrando por: {plantillaActiva?.nombre}
+
                 </Text>
+
             )}
 
-
+            {/*--------------------------------------------------------------
+                Listado de órdenes
+            --------------------------------------------------------------*/}
             <FlatList
+
                 data={ordenesFiltradas}
+
                 keyExtractor={(item) => item.id}
+
                 renderItem={renderOrden}
-                ListEmptyComponent={<Text style={styles.mensajeNoEncontrado}>No hay órdenes guardadas</Text>}
+
+                ListEmptyComponent={
+
+                    <Text style={styles.mensajeNoEncontrado}>
+
+                        No hay órdenes guardadas
+
+                    </Text>
+
+                }
+
             />
 
         </View>
@@ -149,6 +318,18 @@ export default function HistoyOrders({ navigation }) {
 
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Estilos de la pantalla.
+ *
+ * Define la apariencia visual de:
+ * - Contenedor principal.
+ * - Tarjetas de órdenes.
+ * - Botones.
+ * - Mensajes informativos.
+ * - Indicador del filtro activo.
+ * -----------------------------------------------------------------------------
+ */
 const styles = StyleSheet.create({
 
     container: {
@@ -189,6 +370,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold"
     },
+
     filterButton: {
         width: 55,
         height: "100%",
@@ -196,6 +378,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+
     mensajeFiltro: {
         alignSelf: "flex-start",
         backgroundColor: "#FFF4E5",
@@ -209,6 +392,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 14
     },
+
     mensajeNoEncontrado: {
         marginTop: 50,
         textAlign: "center",

@@ -5,8 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //Crear Ordenes 
 import WorkOrderFormScreen from './src/screens/WorkOrdeFormScreen';
-//Listar ordenes
-import OrderListScreen from './src/screens/OrderListScreen';
 //Listar ordenes 
 import HistoyOrders from './src/screens/HistoryOrders';
 //Detalle de ordenes 

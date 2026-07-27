@@ -1,33 +1,93 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import * as Print from "expo-print";
-import * as Sharing from "expo-sharing";
-import { Platform } from "react-native";
-import { obtenerConfigPDF } from "../storage/storage";
+/**
+ * -----------------------------------------------------------------------------
+ * OrderDetail.jsx
+ * -----------------------------------------------------------------------------
+ * Pantalla encargada de visualizar el detalle completo de una orden de trabajo.
+ *
+ * Funcionalidades principales:
+ * - Mostrar la información general de la orden.
+ * - Visualizar todas las secciones y campos pertenecientes a la plantilla.
+ * - Editar una orden existente.
+ * - Generar un documento PDF utilizando la información almacenada.
+ *
+ * La generación del PDF se delega al servicio pdfService, el cual se encarga
+ * de construir el documento utilizando la configuración personalizada del
+ * usuario.
+ * -----------------------------------------------------------------------------
+ */
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity
+} from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
-import { Paths, Directory, File } from 'expo-file-system';
 import { pdfService } from "../services/pdfService";
 
+/**
+ * -----------------------------------------------------------------------------
+ * OrderDetail
+ * -----------------------------------------------------------------------------
+ * Pantalla encargada de mostrar el contenido completo de una orden.
+ *
+ * Además de visualizar la información, permite:
+ * - Editar la orden.
+ * - Generar un PDF utilizando la plantilla correspondiente.
+ *
+ * @param {Object} route Parámetros recibidos mediante React Navigation.
+ * @param {Object} navigation Objeto de navegación.
+ *
+ * @returns {JSX.Element}
+ * -----------------------------------------------------------------------------
+ */
 export default function OrderDetail({ route, navigation }) {
 
+  /**
+   * -------------------------------------------------------------------------
+   * Datos recibidos desde la pantalla anterior.
+   *
+   * orden:
+   *      Contiene toda la información ingresada por el usuario.
+   *
+   * plantilla:
+   *      Define la estructura utilizada para mostrar los datos.
+   * -------------------------------------------------------------------------
+   */
   const { orden, plantilla } = route.params;
 
+  /**
+   * -------------------------------------------------------------------------
+   * Genera el documento PDF correspondiente a la orden.
+   *
+   * La generación se delega completamente al servicio pdfService,
+   * enviándole la orden y la plantilla utilizada.
+   *
+   * @returns {Promise<void>}
+   * -------------------------------------------------------------------------
+   */
   const generar = async () => {
+
     console.log("Lo hace");
 
     await pdfService({
+
       orden,
       plantilla,
 
     });
 
-  }
-
+  };
 
   return (
 
     <ScrollView contentContainerStyle={styles.container}>
 
+      {/*--------------------------------------------------------------
+          Información general de la orden
+      --------------------------------------------------------------*/}
       <View style={styles.infoBox}>
 
         <Text style={styles.infoText}>
@@ -39,6 +99,10 @@ export default function OrderDetail({ route, navigation }) {
         </Text>
 
       </View>
+
+      {/*--------------------------------------------------------------
+          Botón para editar la orden seleccionada
+      --------------------------------------------------------------*/}
       <TouchableOpacity
         style={styles.botonEditar}
         onPress={() =>
@@ -48,6 +112,7 @@ export default function OrderDetail({ route, navigation }) {
           })
         }
       >
+
         <Ionicons
           name="create-outline"
           size={18}
@@ -57,49 +122,70 @@ export default function OrderDetail({ route, navigation }) {
         <Text style={styles.botonEditarTexto}>
           Editar Orden
         </Text>
+
       </TouchableOpacity>
 
+      {/*--------------------------------------------------------------
+          Renderizado dinámico de las secciones de la plantilla
+      --------------------------------------------------------------*/}
       {plantilla.secciones.map((seccion) => (
 
-        <View key={seccion.id} style={styles.seccionContainer}>
+        <View
+          key={seccion.id}
+          style={styles.seccionContainer}
+        >
 
           <Text style={styles.seccionTitulo}>
             {seccion.titulo}
           </Text>
 
+          {/*----------------------------------------------------------
+              Renderizado dinámico de los campos de la sección
+          ----------------------------------------------------------*/}
           {seccion.campos.map((campo) => {
 
+            /**
+             * Valor almacenado para el campo.
+             * Si no existe información, se muestra "-".
+             */
             let valor = orden.valores[campo.id] ?? "-";
+
+            /**
+             * Determina si el contenido es suficientemente largo como para
+             * cambiar la disposición horizontal por una vertical.
+             */
             const esLargo = valor.length > 35;
 
+            /**
+             * Conversión de valores booleanos a un formato legible.
+             */
             if (campo.tipo === "boolean") {
+
               valor = valor ? "Sí" : "No";
+
             }
 
-
-
-
             return (
-              (
 
-                <View
-                  key={campo.id}
-                  style={[
-                    styles.campoRow,
-                    esLargo && styles.campoRowVertical
-                  ]}
-                >
-                  <Text style={styles.campoLabel}>
-                    {campo.etiqueta}
-                  </Text>
+              <View
+                key={campo.id}
+                style={[
+                  styles.campoRow,
+                  esLargo && styles.campoRowVertical
+                ]}
+              >
 
-                  <Text style={styles.campoValor}>
-                    {valor}
-                  </Text>
-                </View>
+                <Text style={styles.campoLabel}>
+                  {campo.etiqueta}
+                </Text>
 
-              )
-            )
+                <Text style={styles.campoValor}>
+                  {valor}
+                </Text>
+
+              </View>
+
+            );
 
           })}
 
@@ -107,13 +193,18 @@ export default function OrderDetail({ route, navigation }) {
 
       ))}
 
+      {/*--------------------------------------------------------------
+          Botón para generar el PDF de la orden
+      --------------------------------------------------------------*/}
       <TouchableOpacity
         style={styles.botonPDF}
         onPress={generar}
       >
+
         <Text style={styles.botonTexto}>
           Generar PDF
         </Text>
+
       </TouchableOpacity>
 
     </ScrollView>
@@ -122,6 +213,19 @@ export default function OrderDetail({ route, navigation }) {
 
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Estilos de la pantalla.
+ *
+ * Define la apariencia visual de:
+ * - Contenedor principal.
+ * - Información general de la orden.
+ * - Secciones.
+ * - Campos.
+ * - Botones de edición.
+ * - Botón de generación de PDF.
+ * -----------------------------------------------------------------------------
+ */
 const styles = StyleSheet.create({
 
   container: {
@@ -213,6 +317,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16
   },
+
   botonEditar: {
     flexDirection: "row",
     alignItems: "center",
@@ -234,6 +339,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#8B6734",
   },
-
 
 });

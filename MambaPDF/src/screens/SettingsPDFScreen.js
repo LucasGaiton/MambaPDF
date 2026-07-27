@@ -1,4 +1,27 @@
-import { useState } from "react";
+/**
+ * -----------------------------------------------------------------------------
+ * SettingsPDFScreen.jsx
+ * -----------------------------------------------------------------------------
+ * Pantalla encargada de configurar la apariencia de los documentos PDF
+ * generados por la aplicación.
+ *
+ * El usuario puede personalizar:
+ *
+ * - Información de la empresa.
+ * - Datos del responsable.
+ * - Logo corporativo.
+ * - Firma del técnico.
+ * - Pie de página.
+ * - Marca de agua.
+ * - Visibilidad de las firmas.
+ *
+ * Además permite generar una vista previa del documento antes de guardar
+ * la configuración.
+ * -----------------------------------------------------------------------------
+ */
+
+import React, { useEffect, useState } from "react";
+
 import {
     View,
     TextInput,
@@ -14,26 +37,54 @@ import {
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { guardarConfigPDF, obtenerConfigPDF } from "../storage/storage";
-import { useEffect } from "react";
+
+import {
+    guardarConfigPDF,
+    obtenerConfigPDF
+} from "../storage/storage";
+
 import { generarPDF } from "../services/pdfService";
 
-
+/**
+ * -----------------------------------------------------------------------------
+ * SettingsPDFScreen
+ * -----------------------------------------------------------------------------
+ * Pantalla utilizada para administrar toda la configuración visual utilizada
+ * durante la generación de documentos PDF.
+ *
+ * Permite modificar y almacenar la configuración personalizada del usuario,
+ * además de visualizar una vista previa antes de guardar los cambios.
+ *
+ * @param {Object} navigation Objeto de navegación de React Navigation.
+ *
+ * @returns {JSX.Element}
+ * -----------------------------------------------------------------------------
+ */
 export default function SettingsPDFScreen({ navigation }) {
 
+    /**
+     * -------------------------------------------------------------------------
+     * Carga la configuración almacenada cuando la pantalla es abierta.
+     * -------------------------------------------------------------------------
+     */
     useEffect(() => {
+
         cargarConfiguracion();
+
     }, []);
 
+    /**
+     * -------------------------------------------------------------------------
+     * Recupera la configuración del PDF almacenada localmente y carga todos
+     * los valores dentro de los estados del formulario.
+     *
+     * Si todavía no existe una configuración guardada simplemente finaliza
+     * la ejecución.
+     * -------------------------------------------------------------------------
+     */
     const cargarConfiguracion = async () => {
-        // console.log("Carga la config");
-
 
         const config = await obtenerConfigPDF();
-        // console.log(typeof config);
-        // console.log(config.empresaNombre);
-        // console.log(config.firma);
-        // console.log(typeof config.empresaLogo);
 
         if (!config) return;
 
@@ -46,139 +97,280 @@ export default function SettingsPDFScreen({ navigation }) {
 
         setLogo(config.empresaLogo || null);
         setFirma(config.firma || null);
-        setWaterMark(config.waterMark || null)
+
+        setWaterMark(config.waterMark || false);
+        setOcultarFirmas(config.ocultarFirmas || false);
 
     };
 
-    const [empresa, setEmpresa] = useState("")
-    const [telefono, setTelefono] = useState("")
-    const [email, setEmail] = useState("")
-    const [tecnico, setTecnico] = useState("")
-    const [dire, setDire] = useState("")
-    const [piePag, setPiePag] = useState("")
-    const [logo, setLogo] = useState("")
-    const [firma, setFirma] = useState("")
-    const [waterMark, setWaterMark] = useState("")
+    /**
+     * -------------------------------------------------------------------------
+     * Estados del formulario.
+     * Cada uno representa una propiedad configurable del PDF.
+     * -------------------------------------------------------------------------
+     */
 
+    const [empresa, setEmpresa] = useState("");
+    const [telefono, setTelefono] = useState("");
+    const [email, setEmail] = useState("");
+    const [tecnico, setTecnico] = useState("");
+    const [dire, setDire] = useState("");
+    const [piePag, setPiePag] = useState("");
+
+    const [logo, setLogo] = useState("");
+    const [firma, setFirma] = useState("");
+
+    const [waterMark, setWaterMark] = useState(false);
+    const [ocultarFirmas, setOcultarFirmas] = useState(false);
+
+    /**
+     * -------------------------------------------------------------------------
+     * Guarda toda la configuración actual del formulario en el almacenamiento
+     * local.
+     *
+     * Una vez almacenada, informa al usuario y vuelve a la pantalla principal.
+     * -------------------------------------------------------------------------
+     */
     const guardar = async () => {
 
         const config = {
+
             empresaNombre: empresa,
             empresaTelefono: telefono,
             empresaLogo: logo,
             empresaEmail: email,
             empresaDireccion: dire,
             piePagina: piePag,
-            tecnico: tecnico,
-            firma: firma,
-            waterMark: waterMark
-        }
+            tecnico,
+            firma,
+            waterMark,
+            ocultarFirmas,
 
-        await guardarConfigPDF(config)
-        Alert.alert("Éxito", "Configuración guardada");
-        navigation.navigate("Home")
-
-    }
-
-    const seleccionarLogo = async () => {
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            base64: true
-        })
-
-        if (!result.canceled) {
-            setLogo(result.assets[0].base64)
-        }
-
-    }
-
-    const seleccionarFirma = async () => {
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            base64: true
-        })
-
-        if (!result.canceled) {
-            setFirma(result.assets[0].base64)
-        }
-
-    }
-
-    const eliminarLogo = () => {
-        setLogo(null);
-    };
-
-    const eliminarFirma = () => {
-        setFirma(null);
-    };
-    const verPreview = async () => {
-
-        const config = {
-            empresaNombre: empresa,
-            empresaTelefono: telefono,
-            empresaLogo: logo,
-            empresaEmail: email,
-            empresaDireccion: dire,
-            piePagina: piePag,
-            tecnico: tecnico,
-            firma: firma,
-            waterMark: waterMark
         };
 
-        const ordenEjemplo = {
-            nombre: "Orden de ejemplo",
-            fechaCreacion: new Date(),
-            valores: {
-                cliente: "Juan Pérez",
-                telefono: "2966 123456",
-                descripcion: "Cambio de fuente de alimentación."
-            }
-        };
+        await guardarConfigPDF(config);
 
-        const plantillaPreview = {
-            nombre: "Instalación",
-            secciones: [
-                {
-                    titulo: "Cliente",
-                    campos: [
-                        { id: "cliente", etiqueta: "Cliente" },
-                        { id: "telefono", etiqueta: "Teléfono" }
-                    ]
-                },
-                {
-                    titulo: "Trabajo",
-                    campos: [
-                        { id: "descripcion", etiqueta: "Descripción" }
-                    ]
-                }
-            ]
-        };
-        console.log("Esto es desde la config", typeof waterMark);
+        Alert.alert(
 
-
-        const uri = await generarPDF(
-            config,
-            ordenEjemplo,
-            plantillaPreview,
+            "Éxito",
+            "Configuración guardada"
 
         );
 
-        navigation.navigate("Preview PDF", {
-            pdfUri: uri,
+        navigation.navigate("Home");
+
+    };
+
+    /**
+     * -------------------------------------------------------------------------
+     * Permite seleccionar una imagen desde la galería para utilizarla como
+     * logo de la empresa.
+     *
+     * La imagen se almacena codificada en Base64.
+     * -------------------------------------------------------------------------
+     */
+    const seleccionarLogo = async () => {
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+
+            base64: true
+
         });
+
+        if (!result.canceled) {
+
+            setLogo(result.assets[0].base64);
+
+        }
+
+    };
+
+    /**
+     * -------------------------------------------------------------------------
+     * Permite seleccionar la imagen correspondiente a la firma del técnico.
+     *
+     * También se almacena codificada en Base64.
+     * -------------------------------------------------------------------------
+     */
+    const seleccionarFirma = async () => {
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+
+            base64: true
+
+        });
+
+        if (!result.canceled) {
+
+            setFirma(result.assets[0].base64);
+
+        }
+
+    };
+
+    /**
+     * -------------------------------------------------------------------------
+     * Elimina el logo actualmente seleccionado.
+     * -------------------------------------------------------------------------
+     */
+    const eliminarLogo = () => {
+
+        setLogo(null);
+
+    };
+
+    /**
+     * -------------------------------------------------------------------------
+     * Elimina la firma actualmente seleccionada.
+     * -------------------------------------------------------------------------
+     */
+    const eliminarFirma = () => {
+
+        setFirma(null);
+
+    };
+
+    /**
+     * -------------------------------------------------------------------------
+     * Genera una vista previa del PDF utilizando la configuración actual.
+     *
+     * Para ello construye una orden y una plantilla de ejemplo, las envía al
+     * servicio de generación de PDF y posteriormente abre la pantalla de
+     * visualización del documento.
+     * -------------------------------------------------------------------------
+     */
+    const verPreview = async () => {
+
+        const config = {
+
+            empresaNombre: empresa,
+            empresaTelefono: telefono,
+            empresaLogo: logo,
+            empresaEmail: email,
+            empresaDireccion: dire,
+            piePagina: piePag,
+            tecnico,
+            firma,
+            waterMark,
+            ocultarFirmas
+
+        };
+
+        /**
+         * Orden utilizada únicamente para generar la vista previa.
+         */
+        const ordenEjemplo = {
+
+            nombre: "Orden de ejemplo",
+
+            fechaCreacion: new Date(),
+
+            valores: {
+
+                cliente: "Juan Pérez",
+
+                telefono: "2966 123456",
+
+                descripcion: "Cambio de fuente de alimentación."
+
+            }
+
+        };
+
+        /**
+         * Plantilla utilizada únicamente para la vista previa.
+         */
+        const plantillaPreview = {
+
+            nombre: "Instalación",
+
+            secciones: [
+
+                {
+                    titulo: "Cliente",
+
+                    campos: [
+
+                        {
+                            id: "cliente",
+                            etiqueta: "Cliente"
+                        },
+
+                        {
+                            id: "telefono",
+                            etiqueta: "Teléfono"
+                        }
+
+                    ]
+
+                },
+
+                {
+                    titulo: "Trabajo",
+
+                    campos: [
+
+                        {
+                            id: "descripcion",
+                            etiqueta: "Descripción"
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        };
+
+        const uri = await generarPDF(
+
+            config,
+            ordenEjemplo,
+            plantillaPreview
+
+        );
+
+        navigation.navigate(
+
+            "Preview PDF",
+
+            {
+
+                pdfUri: uri,
+
+            }
+
+        );
 
     };
 
     return (
+        /**
+        * ---------------------------------------------------------------------
+        * KeyboardAvoidingView
+        * ---------------------------------------------------------------------
+        * Evita que el teclado virtual cubra los campos del formulario,
+        * especialmente en dispositivos iOS.
+        * ---------------------------------------------------------------------
+        */
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
 
+            {/*--------------------------------------------------------------
+                Contenedor con desplazamiento vertical.
+                Permite acceder cómodamente a todas las opciones de
+                configuración del PDF.
+            --------------------------------------------------------------*/}
             <ScrollView
                 contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled"
             >
+                {/*==========================================================
+                    DATOS DE LA EMPRESA
+                ==========================================================*/}
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Nombre de la empresa</Text>
                     <TextInput
@@ -251,6 +443,11 @@ export default function SettingsPDFScreen({ navigation }) {
 
                 <View style={styles.inputGroup}>
 
+                    {/*==========================================================
+                                LOGO CORPORATIVO
+                    ==========================================================*/}
+
+
                     <Text style={styles.label}>Logo de la empresa</Text>
 
                     {logo && (
@@ -310,6 +507,31 @@ export default function SettingsPDFScreen({ navigation }) {
                     >
                         <Text style={styles.buttonText}>Seleccionar Firma</Text>
                     </TouchableOpacity>
+
+                </View>
+
+                <View style={styles.switchContainer}>
+
+                    <View style={styles.switchInfo}>
+
+                        <Text style={styles.switchTitle}>
+                            Ocultar firmas en el PDF
+                        </Text>
+
+                        <Text style={styles.switchDescription}>
+                            Si activas esta opción, el PDF no incluirá las líneas de firma del
+                            técnico ni del cliente. Es útil para generar documentos informativos o
+                            borradores.
+                        </Text>
+
+                    </View>
+
+                    <Switch
+                        value={ocultarFirmas}
+                        onValueChange={setOcultarFirmas}
+                        trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                        thumbColor={ocultarFirmas ? "#E1890A" : "#FFFFFF"}
+                    />
 
                 </View>
 
@@ -571,4 +793,6 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         marginBottom: 8,
     },
+
+
 });

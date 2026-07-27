@@ -47,6 +47,7 @@ export default function SettingsPDFScreen({ navigation }) {
         setLogo(config.empresaLogo || null);
         setFirma(config.firma || null);
         setWaterMark(config.waterMark || null)
+        setOcultarFirmas(config.ocultarFirmas || null);
 
     };
 
@@ -59,6 +60,7 @@ export default function SettingsPDFScreen({ navigation }) {
     const [logo, setLogo] = useState("")
     const [firma, setFirma] = useState("")
     const [waterMark, setWaterMark] = useState("")
+    const [ocultarFirmas, setOcultarFirmas] = useState("");
 
     const guardar = async () => {
 
@@ -71,8 +73,9 @@ export default function SettingsPDFScreen({ navigation }) {
             piePagina: piePag,
             tecnico: tecnico,
             firma: firma,
-            waterMark: waterMark
-        }
+            waterMark,
+            ocultarFirmas,
+        };
 
         await guardarConfigPDF(config)
         Alert.alert("Éxito", "Configuración guardada");
@@ -122,7 +125,8 @@ export default function SettingsPDFScreen({ navigation }) {
             piePagina: piePag,
             tecnico: tecnico,
             firma: firma,
-            waterMark: waterMark
+            waterMark: waterMark,
+            ocultarFirmas: ocultarFirmas
         };
 
         const ordenEjemplo = {
@@ -313,6 +317,31 @@ export default function SettingsPDFScreen({ navigation }) {
 
                 </View>
 
+                <View style={styles.switchContainer}>
+
+                    <View style={styles.switchInfo}>
+
+                        <Text style={styles.switchTitle}>
+                            Ocultar firmas en el PDF
+                        </Text>
+
+                        <Text style={styles.switchDescription}>
+                            Si activas esta opción, el PDF no incluirá las líneas de firma del
+                            técnico ni del cliente. Es útil para generar documentos informativos o
+                            borradores.
+                        </Text>
+
+                    </View>
+
+                    <Switch
+                        value={ocultarFirmas}
+                        onValueChange={setOcultarFirmas}
+                        trackColor={{ false: "#D6D6D6", true: "#E8C68B" }}
+                        thumbColor={ocultarFirmas ? "#E1890A" : "#FFFFFF"}
+                    />
+
+                </View>
+
 
                 <View style={styles.switchContainer}>
 
@@ -336,6 +365,35 @@ export default function SettingsPDFScreen({ navigation }) {
                     />
 
                 </View>
+                {/* <View style={styles.optionContainer}>
+
+                    <Text style={styles.optionTitle}>
+                        Firmas en el PDF
+                    </Text>
+
+                    <Text style={styles.optionDescription}>
+                        Si desactivás esta opción, el PDF no incluirá las líneas de firma del
+                        técnico ni del cliente. Es útil para generar documentos informativos o
+                        borradores.
+                    </Text>
+
+                    <TouchableOpacity
+                        style={[
+                            styles.toggleButton,
+                            ocultarFirmas
+                                ? styles.toggleButtonActive
+                                : styles.toggleButtonInactive,
+                        ]}
+                        onPress={() => setOcultarFirmas(!ocultarFirmas)}
+                    >
+                        <Text style={styles.toggleButtonText}>
+                            {ocultarFirmas
+                                ? "Firmas deshabilitadas"
+                                : "Firmas habilitadas"}
+                        </Text>
+                    </TouchableOpacity>
+
+                </View> */}
 
                 <View style={styles.infoBox}>
 
@@ -571,4 +629,6 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         marginBottom: 8,
     },
+
+
 });

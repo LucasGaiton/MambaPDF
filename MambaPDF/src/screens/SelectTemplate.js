@@ -134,7 +134,7 @@ export default function SelectTemplate({ navigation }) {
                 data={plantillas}
                 keyExtractor={(item) => item.id}
                 renderItem={renderPlantilla}
-                ListEmptyComponent={<Text>No hay plantillas</Text>}
+                ListEmptyComponent={<Text style={styles.mensajeNoEncontrado}>No hay plantillas guardadas</Text>}
             />
 
         </View>
@@ -193,6 +193,23 @@ const styles = StyleSheet.create({
     textoEliminar: {
         color: "white",
         fontWeight: "bold"
-    }
+    },
+     mensajeNoEncontrado: {
+        marginTop: 50,
+        textAlign: "center",
+        color: "#777",
+        fontSize: 16,
+        fontWeight: "500",
+        backgroundColor: "#FFFFFF",
+        padding: 20,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2
+    },
+
 
 });

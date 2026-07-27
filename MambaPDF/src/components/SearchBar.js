@@ -1,3 +1,20 @@
+/**
+ * -----------------------------------------------------------------------------
+ * SearchBar.jsx
+ * -----------------------------------------------------------------------------
+ * Componente reutilizable que permite buscar y filtrar órdenes de trabajo.
+ *
+ * Funcionalidades:
+ * - Buscar órdenes por nombre.
+ * - Filtrar órdenes según la plantilla utilizada.
+ * - Mostrar un modal con las opciones de filtrado disponibles.
+ *
+ * El componente no almacena el estado de búsqueda ni de la plantilla
+ * seleccionada, sino que recibe dichos valores y sus funciones
+ * actualizadoras desde el componente padre.
+ * -----------------------------------------------------------------------------
+ */
+
 import { React, useState } from "react";
 import {
     View,
@@ -10,6 +27,22 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 
+/**
+ * -----------------------------------------------------------------------------
+ * SearchBar
+ * -----------------------------------------------------------------------------
+ * Barra de búsqueda con filtro por plantilla.
+ *
+ * @param {Object} props Propiedades del componente.
+ * @param {string} props.textoBusqueda Texto ingresado por el usuario.
+ * @param {Function} props.setTextoBusqueda Función que actualiza el texto de búsqueda.
+ * @param {string} props.plantillaSeleccionada Identificador de la plantilla filtrada.
+ * @param {Function} props.setPlantillaSeleccionada Función que actualiza la plantilla seleccionada.
+ * @param {Array<Object>} props.plantillas Listado de plantillas disponibles.
+ *
+ * @returns {JSX.Element}
+ * -----------------------------------------------------------------------------
+ */
 export default function SearchBar({
 
     textoBusqueda,
@@ -22,8 +55,29 @@ export default function SearchBar({
 
 }) {
 
+    /**
+     * -------------------------------------------------------------------------
+     * Estado del modal de filtros.
+     * -------------------------------------------------------------------------
+     * true  -> El modal se encuentra visible.
+     * false -> El modal permanece oculto.
+     * -------------------------------------------------------------------------
+     */
     const [modalVisible, setModalVisible] = useState(false);
 
+    /**
+     * -------------------------------------------------------------------------
+     * Renderiza un selector (Picker) con las plantillas disponibles.
+     *
+     * Actualmente no se utiliza dentro del JSX principal, ya que el filtrado
+     * se realiza mediante un Modal con botones seleccionables.
+     *
+     * Puede reutilizarse en futuras versiones para plataformas donde el Picker
+     * resulte más conveniente.
+     *
+     * @returns {JSX.Element}
+     * -------------------------------------------------------------------------
+     */
     const mostrarFiltros = () => (
 
         <View style={styles.pickerContainer}>
@@ -33,11 +87,13 @@ export default function SearchBar({
                 onValueChange={setPlantillaSeleccionada}
             >
 
+                {/* Opción para eliminar el filtro */}
                 <Picker.Item
                     label="Todas las plantillas"
                     value=""
                 />
 
+                {/* Plantillas registradas */}
                 {plantillas.map((p) => (
 
                     <Picker.Item
@@ -52,16 +108,15 @@ export default function SearchBar({
 
         </View>
 
-
-    )
-
-
-
+    );
 
     return (
 
         <View style={styles.container}>
 
+            {/*--------------------------------------------------------------
+                Campo de búsqueda
+            --------------------------------------------------------------*/}
             <TextInput
                 style={styles.input}
                 placeholder="Buscar por nombre..."
@@ -70,6 +125,9 @@ export default function SearchBar({
                 onChangeText={setTextoBusqueda}
             />
 
+            {/*--------------------------------------------------------------
+                Botón para abrir el modal de filtros
+            --------------------------------------------------------------*/}
             <TouchableOpacity
                 style={styles.filterButton}
                 onPress={() => setModalVisible(true)}
@@ -81,6 +139,9 @@ export default function SearchBar({
                 />
             </TouchableOpacity>
 
+            {/*--------------------------------------------------------------
+                Modal de selección de plantilla
+            --------------------------------------------------------------*/}
             <Modal
                 transparent
                 animationType="fade"
@@ -100,10 +161,12 @@ export default function SearchBar({
                             Tipo de plantilla
                         </Text>
 
+                        {/* Mostrar todas las órdenes */}
                         <TouchableOpacity
                             style={[
                                 styles.opcion,
-                                plantillaSeleccionada === "" && styles.opcionSeleccionada
+                                plantillaSeleccionada === "" &&
+                                styles.opcionSeleccionada
                             ]}
                             onPress={() => {
                                 setPlantillaSeleccionada("");
@@ -113,6 +176,7 @@ export default function SearchBar({
                             <Text>Todas las plantillas</Text>
                         </TouchableOpacity>
 
+                        {/* Mostrar cada plantilla registrada */}
                         {plantillas.map((p) => (
 
                             <TouchableOpacity
@@ -142,28 +206,28 @@ export default function SearchBar({
 
             </Modal>
 
-
         </View>
-
-
-
-
-
-
 
     );
 }
 
-
-
+/**
+ * -----------------------------------------------------------------------------
+ * Estilos del componente.
+ *
+ * Contiene la configuración visual de:
+ * - Barra de búsqueda.
+ * - Botón de filtros.
+ * - Modal de selección.
+ * - Opciones disponibles.
+ * -----------------------------------------------------------------------------
+ */
 const styles = StyleSheet.create({
 
     container: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
+        width: "100%",
+        flexDirection: "row",
         marginBottom: 20
-
     },
 
     input: {
@@ -186,6 +250,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         overflow: "hidden"
     },
+
     filterButton: {
         width: "20%",
         backgroundColor: "#E1890A",
@@ -194,6 +259,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
     },
+
     modalOverlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.45)",

@@ -5,6 +5,64 @@ import { obtenerConfigPDF } from "../storage/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { Paths, Directory, File } from 'expo-file-system';
 
+
+/**
+ * -----------------------------------------------------------------------------
+ * pdfService.js
+ * -----------------------------------------------------------------------------
+ * Servicio encargado de la generación de documentos PDF dentro de la aplicación.
+ *
+ * Este módulo concentra toda la lógica necesaria para:
+ *
+ * • Construir el HTML del documento.
+ * • Obtener la configuración personalizada del PDF.
+ * • Generar el archivo PDF utilizando Expo Print.
+ * • Compartir el documento en Android/iOS.
+ * • Imprimir el documento desde la versión Web.
+ * • Generar únicamente el archivo PDF cuando se necesita una vista previa.
+ *
+ * El servicio está compuesto por tres funciones principales:
+ *
+ * • pdfService()       → Genera y comparte/imprime un PDF.
+ * • generarHTMLPDF()  → Construye el HTML del documento.
+ * • generarPDF()      → Devuelve únicamente la URI del PDF generado.
+ * -----------------------------------------------------------------------------
+ */
+
+
+
+
+
+
+/**
+ * -----------------------------------------------------------------------------
+ * Genera un documento PDF utilizando la configuración almacenada por el usuario.
+ *
+ * Flujo de trabajo:
+ *
+ * 1. Obtiene la configuración personalizada del PDF.
+ * 2. Construye el HTML del documento.
+ * 3. Si la aplicación se ejecuta en Web:
+ *      - Abre una nueva pestaña.
+ *      - Inserta el HTML.
+ *      - Envía el documento a impresión.
+ *
+ * 4. Si la aplicación se ejecuta en Android o iOS:
+ *      - Genera el PDF.
+ *      - Lo mueve al directorio de documentos.
+ *      - Reemplaza un archivo existente si fuera necesario.
+ *      - Abre el menú para compartir el documento.
+ *
+ * @async
+ *
+ * @param {Object} parametros
+ * @param {Object} parametros.orden Orden de trabajo.
+ * @param {Object} parametros.plantilla Plantilla utilizada para construir el PDF.
+ *
+ * @returns {Promise<void>}
+ * -----------------------------------------------------------------------------
+ */
+
 export async function pdfService({ orden, plantilla }) {
 
 
@@ -59,6 +117,30 @@ export async function pdfService({ orden, plantilla }) {
 
     }
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * Construye dinámicamente el código HTML utilizado para generar el PDF.
+ *
+ * El documento incorpora:
+ *
+ * • Encabezado con información de la empresa.
+ * • Logo corporativo.
+ * • Marca de agua (opcional).
+ * • Secciones dinámicas de la plantilla.
+ * • Información cargada en la orden.
+ * • Firmas (opcionales).
+ * • Pie de página.
+ *
+ * Todo el contenido es generado utilizando la plantilla seleccionada y los valores ingresados por el usuario.
+ *
+ * @param {Object} config Configuración del PDF.
+ * @param {Object} orden Orden de trabajo.
+ * @param {Object} plantilla Plantilla utilizada.
+ *
+ * @returns {string} Documento HTML listo para imprimir.
+ * -----------------------------------------------------------------------------
+ */
 export function generarHTMLPDF(config, orden, plantilla) {
 
     const seccionesHTML = plantilla.secciones
@@ -409,6 +491,22 @@ ${config?.piePagina || ""}
 
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Genera un archivo PDF y devuelve únicamente su URI.
+ *
+ * Esta función se utiliza para la vista previa del documento, ya que solamente
+ * necesita generar el archivo sin compartirlo ni imprimirlo.
+ *
+ * @async
+ *
+ * @param {Object} config Configuración del PDF.
+ * @param {Object} orden Orden de trabajo.
+ * @param {Object} plantilla Plantilla utilizada.
+ *
+ * @returns {Promise<string>} URI del archivo PDF generado.
+ * -----------------------------------------------------------------------------
+ */
 export async function generarPDF(config, orden, plantilla) {
 
     const html = generarHTMLPDF(config, orden, plantilla);

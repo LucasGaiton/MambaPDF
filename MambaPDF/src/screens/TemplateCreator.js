@@ -164,6 +164,7 @@ export default function TemplateCreator({ navigation, route }) {
             return Alert.alert("Error", "Debe agregar al menos dos opciones");
         }
 
+
         const campoAAgregar = {
             id: idGenerado,
             etiqueta: nuevoCampo.trim(),
@@ -343,7 +344,7 @@ export default function TemplateCreator({ navigation, route }) {
 
                         <Picker.Item label="Texto" value="texto" />
                         <Picker.Item label="Fecha" value="fecha" />
-                        <Picker.Item label="Sí / No" value="Si/No" />
+                        <Picker.Item label="Sí / No" value="boolean" />
                         <Picker.Item label="Selección de Opciones" value="opciones" />
 
                     </Picker>
@@ -429,7 +430,7 @@ export default function TemplateCreator({ navigation, route }) {
                                 <View style={styles.headerCampo}>
 
                                     <Text style={styles.campo}>
-                                        • {campo.etiqueta} ({campo.tipo})
+                                        • {campo.etiqueta} ({campo.tipo === "boolean" ? "Si/No"  : campo.tipo })
                                     </Text>
 
                                     <TouchableOpacity

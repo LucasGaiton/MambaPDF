@@ -258,7 +258,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             case "boolean":
 
-                return (
+                return ( 
+
+                    // <Text> Este es el envio</Text>
 
                     <View style={styles.switchContainer}>
                         <Switch

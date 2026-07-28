@@ -374,6 +374,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Nombre de la empresa</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Ingrese el nombre de la empresa"
                         placeholderTextColor="#8C8C8C"
                         value={empresa}
@@ -385,6 +386,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Teléfono</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Ingrese el teléfono"
                         placeholderTextColor="#8C8C8C"
                         value={telefono}
@@ -397,6 +399,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Correo electrónico</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Ingrese el correo electrónico"
                         placeholderTextColor="#8C8C8C"
                         value={email}
@@ -409,6 +412,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Nombre del responsable</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Ingrese el nombre del responsable"
                         placeholderTextColor="#8C8C8C"
                         value={tecnico}
@@ -420,6 +424,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Dirección</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Ingrese la dirección"
                         placeholderTextColor="#8C8C8C"
                         value={dire}
@@ -431,6 +436,7 @@ export default function SettingsPDFScreen({ navigation }) {
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Pie de página del PDF</Text>
                     <TextInput
+                        maxFontSizeMultiplier={1.1}
                         placeholder="Texto que aparecerá al pie del documento"
                         placeholderTextColor="#8C8C8C"
                         value={piePag}

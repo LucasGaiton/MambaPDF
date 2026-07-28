@@ -80,6 +80,13 @@ export default function TemplateCreator({ navigation, route }) {
             return Alert.alert("Error", "Debe escribir un nombre para la sección");
         }
 
+        if (nombreSeccion.trim().length > 25) {
+            return Alert.alert(
+                "Error",
+                "El nombre de la sección no puede superar los 25 caracteres."
+            );
+        }
+
         const id = nombreSeccion.trim().toLowerCase().replace(/\s+/g, "_");
 
         if (secciones.some(s => s.id === id)) {
@@ -156,6 +163,13 @@ export default function TemplateCreator({ navigation, route }) {
 
         if (!nuevoCampo.trim()) {
             return Alert.alert("Error", "Debe escribir un nombre de campo");
+        }
+
+        if (nuevoCampo.trim().length > 25) {
+            return Alert.alert(
+                "Error",
+                "El nombre del campo no puede superar los 25 caracteres."
+            );
         }
 
         const idGenerado = nuevoCampo.trim().toLowerCase().replace(/\s+/g, "_");
@@ -430,7 +444,7 @@ export default function TemplateCreator({ navigation, route }) {
                                 <View style={styles.headerCampo}>
 
                                     <Text style={styles.campo}>
-                                        • {campo.etiqueta} ({campo.tipo === "boolean" ? "Si/No"  : campo.tipo })
+                                        • {campo.etiqueta} ({campo.tipo === "boolean" ? "Si/No" : campo.tipo})
                                     </Text>
 
                                     <TouchableOpacity
@@ -487,6 +501,8 @@ export default function TemplateCreator({ navigation, route }) {
 const styles = StyleSheet.create({
 
     scrollContainer: {
+        backgroundColor: "#33302D",
+        minWidth: 100,
         minHeight: "100%",
         padding: 20,
         backgroundColor: "#F6F3EF",
@@ -512,6 +528,7 @@ const styles = StyleSheet.create({
     },
 
     pickerContainer: {
+        minHeight: 56,
         borderWidth: 1,
         borderColor: "#E0E0E0",
         backgroundColor: "#FFFFFF",
@@ -522,7 +539,7 @@ const styles = StyleSheet.create({
         outlineStyle: "none"
     },
     picker: {
-        height: 50,
+        minHeight: 56,
         color: "#333",
         outlineStyle: "none" // web
 

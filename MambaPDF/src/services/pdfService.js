@@ -73,8 +73,8 @@ export async function pdfService({ orden, plantilla }) {
         orden,
         plantilla,
     );
-    console.log("watermark:", config.waterMark);
-      console.log("Ocultar firmas", config.ocultarFirmasS);
+    console.log("watermark:", config?.waterMark);
+    console.log("Ocultar firmas", config?.ocultarFirmas);
 
 
 
@@ -181,8 +181,8 @@ export function generarHTMLPDF(config, orden, plantilla) {
         )
         .join("");
 
-        console.log("Este es el ocultar firmas", config?.ocultarFirmas);
-        
+    console.log("Este es el ocultar firmas", config?.ocultarFirmas);
+
     const contenidoHTML =
         `
   <!DOCTYPE html>

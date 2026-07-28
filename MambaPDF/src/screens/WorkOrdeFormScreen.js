@@ -26,7 +26,7 @@ import {
     Alert
 } from "react-native";
 
-import { guardarOrden } from "../storage/storage";
+import { guardarOrden, obtenerConfigPDF } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
@@ -193,6 +193,27 @@ export default function WorkOrderFormScreen({ route, navigation }) {
     const guardarYGenerarPDFHandler = async () => {
 
         const nuevaOrden = await guardarOrdenHandler();
+        const config = await obtenerConfigPDF();
+
+        if (config === null) {
+
+            Alert.alert(
+                "Configuración requerida",
+                "Antes de generar un PDF debes configurar los datos de la empresa.",
+                [
+                    {
+                        text: "Cancelar",
+                        style: "cancel",
+                    },
+                    {
+                        text: "Configurar PDF",
+                        onPress: () => navigation.navigate("Configurar PDF"),
+                    },
+                ]
+            );
+
+            return;
+        }
 
         await pdfService({
             orden: nuevaOrden,
@@ -249,6 +270,8 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                     <TextInput
                         style={styles.input}
                         placeholder={`Ingrese ${campo.etiqueta}`}
+                        placeholderTextColor="#8C8C8C"
+                        maxFontSizeMultiplier={1.1}
                         value={valores[campo.id]}
                         onChangeText={(texto) =>
                             actualizarValor(campo.id, texto)
@@ -258,7 +281,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             case "boolean":
 
-                return ( 
+                return (
 
                     // <Text> Este es el envio</Text>
 
@@ -373,6 +396,8 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Ej: Instalación Router - Cliente Pérez"
+                    placeholderTextColor="#8C8C8C"
+                    maxFontSizeMultiplier={1.1}
                     value={nombreOrden}
                     onChangeText={setNombreOrden}
                 />
@@ -412,14 +437,16 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                     {editando ? "Guardar Cambios" : "Guardar Orden"}
                 </Text>
             </TouchableOpacity>
-            {editando ? <></> : <TouchableOpacity
-                style={styles.boton}
-                onPress={guardarYGenerarPDFHandler}
-            >
-                <Text style={styles.botonTexto}>
-                    Guardar y Generar PFD
-                </Text>
-            </TouchableOpacity>}
+
+            {editando ? <></>
+                : <TouchableOpacity
+                    style={styles.boton}
+                    onPress={guardarYGenerarPDFHandler}
+                >
+                    <Text style={styles.botonTexto}>
+                        Guardar y Generar PFD
+                    </Text>
+                </TouchableOpacity>}
 
 
         </ScrollView>
@@ -511,10 +538,11 @@ const styles = StyleSheet.create({
     },
 
     datePlaceholder: {
-        fontSize: 15,
+        fontSize: 13,
         color: "#999"
     },
     boton: {
+        color: "#FFFF",
         backgroundColor: "#E1890A",
         paddingVertical: 14,
         borderRadius: 8,
@@ -543,5 +571,8 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#8B6734",
     },
+    botonTexto: {
+        color: "#FFF"
+    }
 
 });

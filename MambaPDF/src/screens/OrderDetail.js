@@ -21,11 +21,13 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { pdfService } from "../services/pdfService";
+import { obtenerConfigPDF } from "../storage/storage";
 
 /**
  * -----------------------------------------------------------------------------
@@ -70,7 +72,27 @@ export default function OrderDetail({ route, navigation }) {
    */
   const generar = async () => {
 
-    console.log("Lo hace");
+    const config = await obtenerConfigPDF();
+
+    if (config === null) {
+
+      Alert.alert(
+        "Configuración requerida",
+        "Antes de generar un PDF debes configurar los datos de la empresa.",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Configurar PDF",
+            onPress: () => navigation.navigate("Configurar PDF"),
+          },
+        ]
+      );
+
+      return;
+    }
 
     await pdfService({
 
@@ -306,6 +328,7 @@ const styles = StyleSheet.create({
 
   botonPDF: {
     backgroundColor: "#E1890A",
+    color: "#FFFFFF",
     padding: 16,
     borderRadius: 10,
     alignItems: "center",

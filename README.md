@@ -1,7 +1,7 @@
 # 📄 MambaPDF
 
 <p align="center">
-  <img src="assets/icon.png" alt="MambaPDF Logo" width="150"/>
+  <img src="MambaPDF/assets/icon.png" alt="MambaPDF Logo" width="150"/>
 </p>
 
 <p align="center">

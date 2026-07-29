@@ -337,6 +337,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                             onValueChange={(itemValue) =>
                                 actualizarValor(campo.id, itemValue)
                             }
+                            style={styles.picker}
                         >
 
                             {campo.opciones?.map((opcion, index) => (
@@ -530,6 +531,9 @@ const styles = StyleSheet.create({
         borderColor: "#E0E0E0",
         borderRadius: 8,
         backgroundColor: "#FFFFFF"
+    },
+    picker: {
+        color: "#8C8C8C", // Color del texto
     },
 
     dateText: {

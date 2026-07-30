@@ -23,7 +23,9 @@ import {
     Button,
     Switch,
     TouchableOpacity,
-    Alert
+    Alert,
+    KeyboardAvoidingView,
+    Platform
 } from "react-native";
 
 import { guardarOrden, obtenerConfigPDF } from "../storage/storage";
@@ -134,6 +136,12 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         }));
 
     };
+
+    /**
+    * Actualiza las alturas de los inputs dinamicamente.
+    */
+    const [alturas, setAlturas] = useState({});
+
 
     /**
      * Guarda una nueva orden o actualiza una existente.
@@ -276,6 +284,24 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                         onChangeText={(texto) =>
                             actualizarValor(campo.id, texto)
                         }
+
+                        //Implementación para manjear los inputs con altura expandida
+                        multiline
+                        onContentSizeChange={(e) => {
+                            const altura = e.nativeEvent.contentSize.height;
+
+                            setAlturas(prev => ({
+                                ...prev,
+                                [campo.id]: altura + 1
+                            }));
+                        }}
+                        style={[
+                            styles.input,
+                            {
+                                height: alturas[campo.id] || 50,
+                                textAlignVertical: "top"
+                            }
+                        ]}
                     />
                 );
 
@@ -361,96 +387,108 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
     return (
 
-        <ScrollView contentContainerStyle={styles.container}>
-
-            <Text style={styles.title}>
-                {plantilla.nombre}
-            </Text>
-
-            {!editando && (
-                <TouchableOpacity
-                    style={styles.botonEditar}
-                    onPress={() =>
-                        navigation.navigate("Crear Plantilla", {
-                            plantilla,
-                        })
-                    }
-                >
-                    <Ionicons
-                        name="create-outline"
-                        size={18}
-                        color="#8B6734"
-                    />
-
-                    <Text style={styles.botonEditarTexto}>
-                        Editar plantilla
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            <View style={styles.inputContainer}>
-
-                <Text style={styles.label}>
-                    Nombre de la orden
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ScrollView
+                contentContainerStyle={styles.container}
+            >
+                <Text style={styles.title}>
+                    {plantilla.nombre}
                 </Text>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Ej: Instalación Router - Cliente Pérez"
-                    placeholderTextColor="#8C8C8C"
-                    maxFontSizeMultiplier={1.1}
-                    value={nombreOrden}
-                    onChangeText={setNombreOrden}
-                />
+                {!editando && (
+                    <TouchableOpacity
+                        style={styles.botonEditar}
+                        onPress={() =>
+                            navigation.navigate("Crear Plantilla", {
+                                plantilla,
+                            })
+                        }
+                    >
+                        <Ionicons
+                            name="create-outline"
+                            size={18}
+                            color="#8B6734"
+                        />
 
-            </View>
+                        <Text style={styles.botonEditarTexto}>
+                            Editar plantilla
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
-            {plantilla.secciones.map((seccion) => (
+                <View style={styles.inputContainer}>
 
-                <View key={seccion.id} style={styles.seccionContainer}>
-
-                    <Text style={styles.seccionTitulo}>
-                        {seccion.titulo}
+                    <Text style={styles.label}>
+                        Nombre de la orden
                     </Text>
 
-                    {seccion.campos.map((campo) => (
-
-                        <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
-
-                            <Text style={styles.label}>
-                                {campo.etiqueta}
-                            </Text>
-
-                            {renderCampo(campo)}
-
-                        </View>
-
-                    ))}
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Ej: Instalación Router - Cliente Pérez"
+                        placeholderTextColor="#8C8C8C"
+                        maxFontSizeMultiplier={1.1}
+                        value={nombreOrden}
+                        onChangeText={setNombreOrden}
+                    />
 
                 </View>
 
-            ))}
-            <TouchableOpacity
-                style={styles.boton}
-                onPress={guardarOrdenHandler}
-            >
-                <Text style={styles.botonTexto}>
-                    {editando ? "Guardar Cambios" : "Guardar Orden"}
-                </Text>
-            </TouchableOpacity>
+                {plantilla.secciones.map((seccion) => (
 
-            {editando ? <></>
-                : <TouchableOpacity
+                    <View key={seccion.id} style={styles.seccionContainer}>
+
+                        <Text style={styles.seccionTitulo}>
+                            {seccion.titulo}
+                        </Text>
+
+                        {seccion.campos.map((campo) => (
+
+                            <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
+
+                                <Text style={styles.label}>
+                                    {campo.etiqueta}
+                                </Text>
+
+                                {renderCampo(campo)}
+
+                            </View>
+
+                        ))}
+
+                    </View>
+
+                ))}
+                <TouchableOpacity
                     style={styles.boton}
-                    onPress={guardarYGenerarPDFHandler}
+                    onPress={guardarOrdenHandler}
                 >
                     <Text style={styles.botonTexto}>
-                        Guardar y Generar PFD
+                        {editando ? "Guardar Cambios" : "Guardar Orden"}
                     </Text>
-                </TouchableOpacity>}
+                </TouchableOpacity>
+
+                {editando ? <></>
+                    : <TouchableOpacity
+                        style={styles.boton}
+                        onPress={guardarYGenerarPDFHandler}
+                    >
+                        <Text style={styles.botonTexto}>
+                            Guardar y Generar PFD
+                        </Text>
+                    </TouchableOpacity>}
 
 
-        </ScrollView>
+
+
+
+            </ScrollView>
+
+
+
+        </KeyboardAvoidingView>
 
     );
 

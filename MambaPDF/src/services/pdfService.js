@@ -295,6 +295,9 @@ margin-bottom: 25px;
 .secciones {
 margin-top:25px;
 }
+.seccion{
+margin-top:35px;
+}
 
 .seccionTitulo {
 padding: 8px;
@@ -309,14 +312,14 @@ border-collapse: collapse;
 }
 
 .tabla td {
-border: 1px solid #ccc;
+border: 2px solid #ccc;
 padding: 10px;
+
 }
 
 .campo {
 font-weight: bold;
 width: 40%;
-background: #fafafa;
 }
 
 /* FIRMAS */

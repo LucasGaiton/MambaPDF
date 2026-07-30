@@ -31,9 +31,37 @@ export async function verificarActualizacion() {
 
         if (hayNuevaVersion(versionActual, ultimaVersion.version)) {
 
+            const cambioMayor = esCambioMayor(
+                versionActual,
+                ultimaVersion.version
+            );
+
+            const mensaje = cambioMayor
+                ? `Hay una nueva versión disponible.
+
+                    Versión instalada: ${versionActual}
+                    Nueva versión: ${ultimaVersion.version}
+
+                    ⚠ Esta actualización contiene cambios incompatibles con versiones anteriores.
+
+                    Para evitar errores es necesario borrar los datos de la aplicación (o desinstalarla) antes de instalar la nueva versión.
+
+                    Novedades:
+                    • ${ultimaVersion.changes.join("\n• ")}`
+                
+                : `Hay una nueva versión disponible.
+
+                    Versión instalada: ${versionActual}
+                    Nueva versión: ${ultimaVersion.version}
+
+                    Descargá la nueva APK para actualizar la aplicación.
+
+                    Novedades:
+                    • ${ultimaVersion.changes.join("\n• ")}`;
+
             Alert.alert(
                 "Nueva actualización",
-                `Ya está disponible la versión ${ultimaVersion.version}.\n\nDescarga la nueva APK para actualizar.\n\nNovedades:\n• ${ultimaVersion.changes.join("\n• ")}`,
+                mensaje,
                 [
                     {
                         text: "Más tarde",
@@ -45,7 +73,6 @@ export async function verificarActualizacion() {
                     },
                 ]
             );
-
         }
 
     } catch (error) {
@@ -74,4 +101,11 @@ function hayNuevaVersion(actual, remota) {
 
     return false;
 
+}
+
+function esCambioMayor(actual, remota) {
+    const majorActual = Number(actual.split(".")[0]);
+    const majorRemota = Number(remota.split(".")[0]);
+
+    return majorRemota > majorActual;
 }

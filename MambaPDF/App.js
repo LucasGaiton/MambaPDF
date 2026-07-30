@@ -2,7 +2,9 @@ import React from "react";
 import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect } from "react";
 
+import { verificarActualizacion } from "./src/services/versionService";
 //Crear Ordenes 
 import WorkOrderFormScreen from './src/screens/WorkOrdeFormScreen';
 //Listar ordenes 
@@ -42,6 +44,12 @@ const AppTheme = {
 };
 
 export default function App() {
+
+useEffect(() => {
+    verificarActualizacion();
+}, []);
+
+
   const plantillaDemo = {
     nombre: "Orden de prueba",
     campos: [

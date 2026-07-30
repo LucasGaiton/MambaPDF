@@ -167,7 +167,7 @@ export function generarHTMLPDF(config, orden, plantilla) {
                             return (`
             <tr>
               <td class="campo">${campo.etiqueta}</td>
-              <td>${valor || ""}</td>
+              <td class="valor">${valor || ""}</td>
             </tr>
           `)
                         }
@@ -307,19 +307,28 @@ margin-bottom: 0px
 }
 
 .tabla {
-width: 100%;
-border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .tabla td {
-border: 2px solid #ccc;
-padding: 10px;
+    border: 2px solid #ccc;
+    padding: 10px;
+    vertical-align: top;
 
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .campo {
-font-weight: bold;
-width: 40%;
+    width: 40%;
+    font-weight: bold;
+}
+
+.valor {
+    width: 60%;
 }
 
 /* FIRMAS */

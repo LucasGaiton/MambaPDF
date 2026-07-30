@@ -39,25 +39,24 @@ export async function verificarActualizacion() {
             const mensaje = cambioMayor
                 ? `Hay una nueva versión disponible.
 
-                    Versión instalada: ${versionActual}
-                    Nueva versión: ${ultimaVersion.version}
+Versión instalada: ${versionActual}
+Nueva versión: ${ultimaVersion.version}
 
-                    ⚠ Esta actualización contiene cambios incompatibles con versiones anteriores.
+⚠ Esta actualización contiene cambios incompatibles con versiones anteriores.
 
-                    Para evitar errores es necesario borrar los datos de la aplicación (o desinstalarla) antes de instalar la nueva versión.
+Para evitar errores, antes de instalar la nueva versión debés borrar los datos de la aplicación o desinstalarla por completo.
 
-                    Novedades:
-                    • ${ultimaVersion.changes.join("\n• ")}`
-                
+Novedades:
+• ${ultimaVersion.changes.join("\n• ")}`
                 : `Hay una nueva versión disponible.
 
-                    Versión instalada: ${versionActual}
-                    Nueva versión: ${ultimaVersion.version}
+Versión instalada: ${versionActual}
+Nueva versión: ${ultimaVersion.version}
 
-                    Descargá la nueva APK para actualizar la aplicación.
+Descargá la nueva APK para actualizar la aplicación.
 
-                    Novedades:
-                    • ${ultimaVersion.changes.join("\n• ")}`;
+Novedades:
+• ${ultimaVersion.changes.join("\n• ")}`;
 
             Alert.alert(
                 "Nueva actualización",

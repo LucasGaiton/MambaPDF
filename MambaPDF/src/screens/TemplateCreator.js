@@ -2,7 +2,6 @@ import {
     View,
     Text,
     TextInput,
-    FlatList,
     StyleSheet,
     Alert,
     ScrollView,
@@ -44,8 +43,6 @@ export default function TemplateCreator({ navigation, route }) {
         plantillaEditar?.secciones || []
     );
 
-    // Nombre de la nueva sección
-    const [nombreSeccion, setNombreSeccion] = useState("");
 
     // Sección actualmente seleccionada para agregar campos
     const [seccionActiva, setSeccionActiva] = useState(
@@ -54,15 +51,9 @@ export default function TemplateCreator({ navigation, route }) {
             : null
     );
 
-    // Nombre del nuevo campo
-    const [nuevoCampo, setNuevoCampo] = useState("");
-
-    // Tipo del nuevo campo
-    const [tipoCampo, setTipoCampo] = useState("texto");
-
     // Estados utilizados cuando el campo es de tipo "opciones"
-    const [opcionNueva, setOpcionNueva] = useState("");
-    const [opcionesPersonalizadas, setOpcionesPersonalizadas] = useState([]);
+    const [nuevaOpcion, setNuevaOpcion] = useState({});
+    //const [opcionesPersonalizadas, setOpcionesPersonalizadas] = useState([]);
 
 
     // ======================================
@@ -74,34 +65,20 @@ export default function TemplateCreator({ navigation, route }) {
      * Valida que el nombre no esté vacío
      * y que no exista otra sección con el mismo id.
      */
+
     const agregarSeccion = () => {
 
-        if (!nombreSeccion.trim()) {
-            return Alert.alert("Error", "Debe escribir un nombre para la sección");
-        }
-
-        if (nombreSeccion.trim().length > 25) {
-            return Alert.alert(
-                "Error",
-                "El nombre de la sección no puede superar los 25 caracteres."
-            );
-        }
-
-        const id = nombreSeccion.trim().toLowerCase().replace(/\s+/g, "_");
-
-        if (secciones.some(s => s.id === id)) {
-            return Alert.alert("Error", "Ya existe una sección con ese nombre");
-        }
+        const id = Date.now().toString();
 
         const nuevaSeccion = {
             id,
-            titulo: nombreSeccion.trim(),
+            titulo: "",
             campos: []
         };
 
-        setSecciones([...secciones, nuevaSeccion]);
+        setSecciones(prev => [...prev, nuevaSeccion]);
+
         setSeccionActiva(id);
-        setNombreSeccion("");
 
     };
 
@@ -128,6 +105,23 @@ export default function TemplateCreator({ navigation, route }) {
 
     };
 
+    const editarSeccion = (idSeccion, nuevoTitulo) => {
+
+        setSecciones(prev =>
+            prev.map(seccion =>
+
+                seccion.id === idSeccion
+                    ? {
+                        ...seccion,
+                        titulo: nuevoTitulo
+                    }
+                    : seccion
+
+            )
+        );
+
+    };
+
     // ======================================
     // GESTIÓN DE OPCIONES
     // ======================================
@@ -135,14 +129,82 @@ export default function TemplateCreator({ navigation, route }) {
     /**
      * Agrega una opción a un campo de tipo selección.
      */
-    const agregarOpcion = () => {
+    const agregarOpcionCampo = (idSeccion, idCampo) => {
 
-        if (!opcionNueva.trim()) {
-            return Alert.alert("Error", "La opción no puede estar vacía.");
-        }
+        const texto = (nuevaOpcion[idCampo] || "").trim();
 
-        setOpcionesPersonalizadas([...opcionesPersonalizadas, opcionNueva.trim()]);
-        setOpcionNueva("");
+        if (!texto) return;
+
+        setSecciones(prev =>
+
+            prev.map(seccion => {
+
+                if (seccion.id !== idSeccion)
+                    return seccion;
+
+                return {
+
+                    ...seccion,
+
+                    campos: seccion.campos.map(campo =>
+
+                        campo.id === idCampo
+                            ? {
+                                ...campo,
+                                opciones: [...campo.opciones, texto]
+                            }
+                            : campo
+
+                    )
+
+                };
+
+            })
+
+        );
+
+        setNuevaOpcion(prev => ({
+            ...prev,
+            [idCampo]: ""
+        }));
+
+    };
+
+    const eliminarOpcionCampo = (
+        idSeccion,
+        idCampo,
+        indice
+    ) => {
+
+        setSecciones(prev =>
+
+            prev.map(seccion => {
+
+                if (seccion.id !== idSeccion)
+                    return seccion;
+
+                return {
+
+                    ...seccion,
+
+                    campos: seccion.campos.map(campo =>
+
+                        campo.id === idCampo
+                            ? {
+                                ...campo,
+                                opciones: campo.opciones.filter(
+                                    (_, i) => i !== indice
+                                )
+                            }
+                            : campo
+
+                    )
+
+                };
+
+            })
+
+        );
 
     };
 
@@ -158,56 +220,64 @@ export default function TemplateCreator({ navigation, route }) {
     const agregarCampo = () => {
 
         if (!seccionActiva) {
-            return Alert.alert("Error", "Debe seleccionar una sección");
-        }
-
-        if (!nuevoCampo.trim()) {
-            return Alert.alert("Error", "Debe escribir un nombre de campo");
-        }
-
-        if (nuevoCampo.trim().length > 25) {
             return Alert.alert(
                 "Error",
-                "El nombre del campo no puede superar los 25 caracteres."
+                "Debe seleccionar una sección."
             );
         }
 
-        const idGenerado = nuevoCampo.trim().toLowerCase().replace(/\s+/g, "_");
-
-        if (tipoCampo === "opciones" && opcionesPersonalizadas.length < 2) {
-            return Alert.alert("Error", "Debe agregar al menos dos opciones");
-        }
-
-
-        const campoAAgregar = {
-            id: idGenerado,
-            etiqueta: nuevoCampo.trim(),
-            tipo: tipoCampo
+        const nuevo = {
+            id: Date.now().toString(),
+            etiqueta: "",
+            tipo: "",
+            opciones: []
         };
 
-        if (tipoCampo === "opciones") {
-            campoAAgregar.opciones = opcionesPersonalizadas;
-        }
+        setSecciones(prev =>
 
-        const nuevasSecciones = secciones.map(seccion => {
+            prev.map(seccion =>
 
-            if (seccion.id === seccionActiva) {
+                seccion.id === seccionActiva
+                    ? {
+                        ...seccion,
+                        campos: [...seccion.campos, nuevo]
+                    }
+                    : seccion
+
+            )
+
+        );
+
+    };
+
+    const editarCampo = (idSeccion, idCampo, propiedad, valor) => {
+
+        setSecciones(prev =>
+
+            prev.map(seccion => {
+
+                if (seccion.id !== idSeccion) return seccion;
+
                 return {
+
                     ...seccion,
-                    campos: [...seccion.campos, campoAAgregar]
+
+                    campos: seccion.campos.map(campo =>
+
+                        campo.id === idCampo
+                            ? {
+                                ...campo,
+                                [propiedad]: valor
+                            }
+                            : campo
+
+                    )
+
                 };
-            }
 
-            return seccion;
+            })
 
-        });
-
-        setSecciones(nuevasSecciones);
-
-        setNuevoCampo("");
-        setTipoCampo("texto");
-        setOpcionesPersonalizadas([]);
-        setOpcionNueva("");
+        );
 
     };
 
@@ -235,6 +305,80 @@ export default function TemplateCreator({ navigation, route }) {
 
     };
 
+    const validaciones = () => {
+        if (!nombre.trim()) {
+            return {
+                ok: false,
+                mensaje: "Debe poner un nombre a la plantilla."
+            };
+        }
+
+        if (secciones.length === 0) {
+            return {
+                ok: false,
+                mensaje: "Debe agregar al menos una sección"
+            };
+        }
+
+
+        // ==========================================
+        // Validación de secciones y campos
+        // ==========================================
+
+        for (const seccion of secciones) {
+
+            if (!seccion.titulo.trim()) {
+                return {
+                    ok: false,
+                    mensaje: "Todas las secciones deben tener un nombre."
+                };
+            }
+
+            if (seccion.campos.length === 0) {
+                return {
+                    ok: false,
+                    mensaje: `La sección "${seccion.titulo}" debe contener al menos un campo.`
+                };
+            }
+
+            for (const campo of seccion.campos) {
+
+                console.log("Estos son los campos", campo);
+
+
+                if (!campo.etiqueta.trim()) {
+                    return {
+                        ok: false,
+                        mensaje: `Todos los campos de la sección "${seccion.titulo}" deben tener un nombre.`
+                    };
+                }
+
+                if (campo.tipo === "") {
+                    return {
+                        ok: false,
+                        mensaje: `Debe seleccionar un tipo para el campo "${campo.etiqueta || "sin nombre"}".`
+                    };
+                }
+
+                if (
+                    campo.tipo === "opciones" &&
+                    campo.opciones.length < 2
+                ) {
+                    return {
+                        ok: false,
+                        mensaje: `El campo "${campo.etiqueta}" debe tener al menos dos opciones.`
+                    };
+                }
+
+            }
+
+        }
+
+        return {
+            ok: true
+        };
+    }
+
     // ======================================
     // GUARDADO DE LA PLANTILLA
     // ======================================
@@ -245,15 +389,12 @@ export default function TemplateCreator({ navigation, route }) {
      * y vuelve a la pantalla principal.
      */
     const guardar = async () => {
+        const resultado = validaciones()
 
-        if (!nombre.trim()) {
-            return Alert.alert("Error", "Debe poner un nombre a la plantilla");
+        if (!resultado.ok) {
+            Alert.alert("Error", resultado.mensaje);
+            return;
         }
-
-        if (secciones.length === 0) {
-            return Alert.alert("Error", "Debe agregar al menos una sección");
-        }
-
         const plantilla = {
             id: plantillaEditar
                 ? plantillaEditar.id
@@ -298,132 +439,21 @@ export default function TemplateCreator({ navigation, route }) {
                     style={styles.input}
                 />
 
-                {/* <Text style={styles.subtitulo}>Nueva Sección</Text> */}
-
-                <TextInput
-                    placeholder="Nombre de la sección"
-                    placeholderTextColor="#8C8C8C"
-                    value={nombreSeccion}
-                    onChangeText={setNombreSeccion}
-                    style={styles.input}
-                />
-
-                <TouchableOpacity
-                    style={styles.boton}
-                    onPress={agregarSeccion}
-                >
-                    <Text style={styles.botonTexto}>Agregar Sección</Text>
-                </TouchableOpacity>
-
-                {secciones.length > 0 && (
-
-                    <>
-                        <Text style={styles.subtitulo}>Agregar campos a:</Text>
-
-                        <View style={styles.pickerContainer}>
-
-                            <Picker
-                                style={styles.picker}
-                                selectedValue={seccionActiva}
-                                onValueChange={(value) => setSeccionActiva(value)}
-                            >
-
-                                {secciones.map(s => (
-                                    <Picker.Item
-                                        key={s.id}
-                                        label={s.titulo}
-                                        value={s.id}
-                                    />
-                                ))}
-
-                            </Picker>
-
-                        </View>
-
-                    </>
-
-                )}
-
-                {/* <Text style={styles.subtitulo}>Nuevo Campo</Text> */}
-                <Text style={styles.subtitulo}>Tipo de campo:</Text>
-
-                <View style={styles.pickerContainer}>
-
-                    <Picker
-                        outlineStyle="none"
-                        style={styles.picker}
-                        selectedValue={tipoCampo}
-                        onValueChange={(value) => setTipoCampo(value)}
-                    >
-
-                        <Picker.Item label="Texto" value="texto" />
-                        <Picker.Item label="Fecha" value="fecha" />
-                        <Picker.Item label="Sí / No" value="boolean" />
-                        <Picker.Item label="Selección de Opciones" value="opciones" />
-
-                    </Picker>
-
-                </View>
-
-                <TextInput
-                    placeholder="Nombre del campo"
-                    placeholderTextColor="#8C8C8C"
-                    value={nuevoCampo}
-                    onChangeText={setNuevoCampo}
-                    style={styles.input}
-                />
-
-
-
-                {tipoCampo === "opciones" && (
-
-                    <View style={styles.opcionesContainer}>
-
-                        <Text style={styles.subtitulo}>
-                            Opciones para "{nuevoCampo || "campo"}"
-                        </Text>
-
-                        <TextInput
-                            placeholder="Escriba una opción"
-                            placeholderTextColor="#8C8C8C"
-                            value={opcionNueva}
-                            onChangeText={setOpcionNueva}
-                            style={styles.input}
-                        />
-
-                        <TouchableOpacity
-                            style={styles.botonSecundario}
-                            onPress={agregarOpcion}
-                        >
-                            <Text style={styles.botonTexto}>Agregar Opción</Text>
-                        </TouchableOpacity>
-
-                        {opcionesPersonalizadas.map((op, index) => (
-                            <Text key={index} style={styles.opcionItem}>
-                                - {op}
-                            </Text>
-                        ))}
-
-                    </View>
-
-                )}
-
-                <TouchableOpacity
-                    style={styles.boton}
-                    onPress={agregarCampo}
-                >
-                    <Text style={styles.botonTexto}>Agregar Campo</Text>
-                </TouchableOpacity>
-
                 {secciones.map(seccion => (
 
                     <View key={seccion.id} style={styles.seccionContainer}>
 
                         <View style={styles.headerSeccion}>
 
-                            <Text style={styles.seccionTitulo}>
-                                {seccion.titulo}
-                            </Text>
+                            <TextInput
+                                style={styles.seccionTituloInput}
+                                placeholder="Nombre de la sección"
+                                placeholderTextColor="#999"
+                                value={seccion.titulo}
+                                onChangeText={(texto) =>
+                                    editarSeccion(seccion.id, texto)
+                                }
+                            />
 
                             <TouchableOpacity
                                 onPress={() => eliminarSeccion(seccion.id)}
@@ -431,7 +461,7 @@ export default function TemplateCreator({ navigation, route }) {
                                 <Ionicons
                                     name="trash-outline"
                                     size={22}
-                                    color="#C0392B"
+                                    color="#E1890A"
                                 />
                             </TouchableOpacity>
 
@@ -443,38 +473,153 @@ export default function TemplateCreator({ navigation, route }) {
 
                                 <View style={styles.headerCampo}>
 
-                                    <Text style={styles.campo}>
-                                        • {campo.etiqueta} ({campo.tipo === "boolean" ? "Si/No" : campo.tipo})
-                                    </Text>
+                                    <TextInput
+                                        style={styles.campoInput}
+                                        placeholder="Nombre del campo"
+                                        placeholderTextColor="#999"
+                                        value={campo.etiqueta}
+                                        onChangeText={(texto) =>
+                                            editarCampo(
+                                                seccion.id,
+                                                campo.id,
+                                                "etiqueta",
+                                                texto
+                                            )
+                                        }
+                                    />
 
+                                    <View style={styles.pickerContainer}>
+                                        <Picker
+                                            style={styles.picker}
+                                            selectedValue={campo.tipo}
+                                            onValueChange={(valor) =>
+                                                editarCampo(
+                                                    seccion.id,
+                                                    campo.id,
+                                                    "tipo",
+                                                    valor
+                                                )
+                                            }
+                                        >
+                                            <Picker.Item label="Tipo de campo" value="" color="#999" />
+                                            <Picker.Item label="Texto" value="texto" />
+                                            <Picker.Item label="Fecha" value="fecha" />
+                                            <Picker.Item label="Sí / No" value="boolean" />
+                                            <Picker.Item label="Opciones" value="opciones" />
+                                        </Picker>
+                                    </View>
+
+
+                                    {campo.tipo === "opciones" && (
+
+                                        <View style={styles.opcionesEditor}>
+
+                                            <View style={styles.nuevaOpcionContainer}>
+
+                                                <TextInput
+                                                    style={styles.inputNuevaOpcion}
+                                                    placeholder="Nueva opción"
+                                                    placeholderTextColor="#999"
+                                                    value={nuevaOpcion[campo.id] || ""}
+                                                    onChangeText={(texto) =>
+                                                        setNuevaOpcion(prev => ({
+                                                            ...prev,
+                                                            [campo.id]: texto
+                                                        }))
+                                                    }
+                                                />
+
+                                                <TouchableOpacity
+                                                    style={styles.botonAgregarOpcion}
+                                                    onPress={() =>
+                                                        agregarOpcionCampo(
+                                                            seccion.id,
+                                                            campo.id
+                                                        )
+                                                    }
+                                                >
+                                                    <Ionicons
+                                                        name="add"
+                                                        size={22}
+                                                        color="#FFF"
+                                                    />
+                                                </TouchableOpacity>
+
+                                            </View>
+
+                                            {campo.opciones.map((opcion, indice) => (
+
+                                                <View
+                                                    key={indice}
+                                                    style={styles.opcionRow}
+                                                >
+
+                                                    <Text style={styles.opcionTexto}>
+                                                        {opcion}
+                                                    </Text>
+
+                                                    <TouchableOpacity
+                                                        onPress={() =>
+                                                            eliminarOpcionCampo(
+                                                                seccion.id,
+                                                                campo.id,
+                                                                indice
+                                                            )
+                                                        }
+                                                    >
+                                                        <Ionicons
+                                                            name="trash-outline"
+                                                            size={18}
+                                                            color="#A64B2A"
+                                                        />
+                                                    </TouchableOpacity>
+
+                                                </View>
+
+                                            ))}
+
+                                        </View>
+
+                                    )}
                                     <TouchableOpacity
+                                        style={styles.botonEliminarCampo}
                                         onPress={() => eliminarCampo(seccion.id, campo.id)}
                                     >
                                         <Ionicons
-                                            name="close-circle"
-                                            size={22}
-                                            color="#C0392B"
+                                            name="trash-outline"
+                                            size={18}
+                                            color="#FFF"
                                         />
                                     </TouchableOpacity>
 
+
+
                                 </View>
 
-                                {campo.tipo === "opciones" && (
 
-                                    <View style={styles.opcionesLista}>
 
-                                        {campo.opciones.map((op, i) => (
-                                            <Text key={i} style={styles.opcionItem}>
-                                                - {op}
-                                            </Text>
-                                        ))}
 
-                                    </View>
 
-                                )}
                             </View>
 
                         ))}
+
+                        <TouchableOpacity
+                            style={styles.botonSecundario}
+                            onPress={() => {
+
+                                setSeccionActiva(seccion.id);
+
+                                agregarCampo();
+
+                            }}
+                        >
+
+                            <Text style={styles.botonTexto}>
+                                + Agregar campo
+                            </Text>
+
+                        </TouchableOpacity>
 
                     </View>
 
@@ -482,6 +627,15 @@ export default function TemplateCreator({ navigation, route }) {
 
                 <TouchableOpacity
                     style={styles.boton}
+                    onPress={agregarSeccion}
+                >
+                    <Text style={styles.botonTexto}>
+                        + Agregar sección
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.botonGuardar}
                     onPress={guardar}
                 >
                     <Text style={styles.botonTexto}>
@@ -508,14 +662,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#F6F3EF",
     },
 
-    title: {
-        fontSize: 26,
-        fontWeight: "bold",
-        color: "#8B6734",
-        marginBottom: 20,
-        textAlign: "center"
-    },
-
     input: {
         borderWidth: 1,
         borderColor: "#E0E0E0",
@@ -528,32 +674,30 @@ const styles = StyleSheet.create({
     },
 
     pickerContainer: {
-        minHeight: 56,
+        flex: 1.3,
         borderWidth: 1,
         borderColor: "#E0E0E0",
-        backgroundColor: "#FFFFFF",
         borderRadius: 8,
-        marginBottom: 12,
-        paddingHorizontal: 8,
-        justifyContent: "center",
-        outlineStyle: "none"
+        backgroundColor: "#FFF",
+        overflow: "hidden",
+        minHeight: 48,
     },
     picker: {
-        minHeight: 56,
+        width: "100%",
+        height: 48,
         color: "#333",
-        outlineStyle: "none" // web
-
     },
 
-    subtitulo: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#8B6734",
-        marginTop: 10,
-        marginBottom: 10
-    },
 
     boton: {
+        backgroundColor: "#B67A26",
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: "center",
+        marginBottom: 12,
+        elevation: 3
+    },
+    botonGuardar: {
         backgroundColor: "#E1890A",
         paddingVertical: 14,
         borderRadius: 8,
@@ -563,7 +707,7 @@ const styles = StyleSheet.create({
     },
 
     botonSecundario: {
-        backgroundColor: "#B67A26",
+        backgroundColor: "#E1890A",
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: "center",
@@ -577,53 +721,58 @@ const styles = StyleSheet.create({
     },
 
     seccionContainer: {
-        backgroundColor: "#FFFFFF",
-        padding: 15,
-        marginTop: 15,
-        marginBottom: 13,
-        borderRadius: 10,
-        borderLeftWidth: 5,
-        borderLeftColor: "#E1890A",
+        backgroundColor: "#FFF",
+        padding: 18,
+        marginTop: 13,
+        gap: 10,
+        marginBottom: 12,
         shadowColor: "#000",
         shadowOpacity: 0.05,
         shadowRadius: 5,
-        elevation: 2
+        elevation: 3,
+        borderRadius: 10,
+        borderLeftWidth: 6,
+        borderLeftColor: "#E1890A"
     },
 
-    seccionTitulo: {
-        fontSize: 17,
+    seccionTituloInput: {
+        fontSize: 18,
         fontWeight: "bold",
         color: "#B67A26",
-        marginBottom: 8
+        paddingVertical: 4,
+        marginBottom: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E5E5",
+        outlineStyle: "none"
     },
 
     campoContainer: {
-        marginLeft: 10,
-        marginBottom: 6
+        backgroundColor: "#FFF8ED",
+        borderWidth: 1,
+        borderColor: "#E8C68B",
+        marginBottom: 6,
+        borderRadius: 10,
+        padding: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        gap: 10,
+        elevation: 2
     },
-
-    campo: {
-        fontWeight: "600",
-        color: "#333"
-    },
-
-    opcionesContainer: {
+    campoInput: {
+        flex: 2,
         borderWidth: 1,
         borderColor: "#E0E0E0",
-        backgroundColor: "#FFF9F2",
-        padding: 12,
-        marginBottom: 15,
-        borderRadius: 8
+        backgroundColor: "#FFF",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        fontSize: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E5E5",
+        outlineStyle: "none",
+        height: 48
     },
 
-    opcionesLista: {
-        marginLeft: 15
-    },
-
-    opcionItem: {
-        fontStyle: "italic",
-        color: "#555"
-    },
     headerSeccion: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -632,23 +781,68 @@ const styles = StyleSheet.create({
     },
 
     headerCampo: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center"
+        width: "100%", // en vez de 90%
+        flexDirection: "column",
+        gap: 8,
+        marginBottom: 10,
     },
 
-    botonEliminar: {
-        color: "#C0392B",
-        fontSize: 22,
-        fontWeight: "bold",
-        paddingHorizontal: 4
-    },
 
     botonEliminarCampo: {
-        color: "#C0392B",
-        fontSize: 18,
-        fontWeight: "bold",
-        paddingHorizontal: 4
+        backgroundColor: "#8B6734",
+        paddingVertical: 11,
+        borderRadius: 8,
+        alignItems: "center",
+        elevation: 3
     },
+    opcionesEditor: {
+        marginTop: 10,
+    },
+
+    nuevaOpcionContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10,
+    },
+
+    inputNuevaOpcion: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        backgroundColor: "#FFF",
+        outlineStyle: "none",
+    },
+
+    botonAgregarOpcion: {
+        width: 44,
+        height: 44,
+        borderRadius: 8,
+        backgroundColor: "#E1890A",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    opcionRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: "#F8F8F8",
+        borderWidth: 1,
+        borderColor: "#E8C68B",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginBottom: 8,
+    },
+
+    opcionTexto: {
+        color: "#333",
+        fontSize: 15,
+    },
+
 
 });

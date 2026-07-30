@@ -313,7 +313,7 @@ margin-bottom: 0px
 }
 
 .tabla td {
-    border: 2px solid #ccc;
+    border: 1px solid #ccc;
     padding: 10px;
     vertical-align: top;
 

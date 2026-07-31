@@ -260,6 +260,7 @@ export default function SettingsPDFScreen({ navigation }) {
          * Orden utilizada únicamente para generar la vista previa.
          */
         const ordenEjemplo = {
+            id:"12345678910",
 
             nombre: "Orden de ejemplo",
 

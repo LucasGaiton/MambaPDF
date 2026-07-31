@@ -231,6 +231,9 @@ box-sizing: border-box;
 .contenido {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 
@@ -302,6 +305,7 @@ margin-top:35px;
 .seccionTitulo {
 padding: 8px;
 font-size: 18px;
+font-weight: bold;
 margin-top: 5px;
 margin-bottom: 0px
 }
@@ -367,6 +371,10 @@ padding-top: 10px;
 text-align: center;
 font-size: 12px;
 color: #777;
+}
+.firmaYFooter{
+    margin-top: auto;
+
 }
 
 </style>
@@ -435,7 +443,7 @@ ORDEN DE TRABAJO
 </div>
 
 <div class="subtitulo">
-${orden.plantillaId}
+${orden.id}
 </div>
 
 <!-- SECCIONES DINAMICAS -->
@@ -445,6 +453,8 @@ ${seccionesHTML}
 </div>
 
 <!-- FIRMAS -->
+
+<div class="firmaYFooter">
 
 ${config?.ocultarFirmas === false
             ? `
@@ -490,6 +500,8 @@ Recibí conforme
 
 <div class="footer">
 ${config?.piePagina || ""}
+</div>
+
 </div>
 
 </div>

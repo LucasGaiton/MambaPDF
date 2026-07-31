@@ -23,10 +23,13 @@ import {
     Button,
     Switch,
     TouchableOpacity,
-    Alert
+    Alert,
+    KeyboardAvoidingView,
+    Platform
 } from "react-native";
 
 import { guardarOrden, obtenerConfigPDF } from "../storage/storage";
+import CustomPickerModal from "../components/CustomPickerModal";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
@@ -52,6 +55,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
      */
     useEffect(() => {
 
+
         navigation.setOptions({
             title: orden
                 ? "Editar Orden"
@@ -72,6 +76,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
         const initialState = {};
 
+        console.log("esto es la plantilla", plantilla);
+
+
         plantilla.secciones.forEach(seccion => {
 
             seccion.campos.forEach(campo => {
@@ -80,9 +87,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                     initialState[campo.id] = false;
                 }
 
-                else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
-                    initialState[campo.id] = campo.opciones[0];
-                }
+                // else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
+                //     initialState[campo.id] = campo.opciones[0];
+                // }
 
                 else {
                     initialState[campo.id] = "";
@@ -136,6 +143,12 @@ export default function WorkOrderFormScreen({ route, navigation }) {
     };
 
     /**
+    * Actualiza las alturas de los inputs dinamicamente.
+    */
+    const [alturas, setAlturas] = useState({});
+
+
+    /**
      * Guarda una nueva orden o actualiza una existente.
      *
      * Validaciones:
@@ -173,6 +186,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             valores: valores
 
         };
+
+        console.log("Esto es la nueva orden platillaId", nuevaOrden.plantillaId);
+
 
 
         await guardarOrden(nuevaOrden.id, nuevaOrden);
@@ -276,6 +292,24 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                         onChangeText={(texto) =>
                             actualizarValor(campo.id, texto)
                         }
+
+                        //Implementación para manjear los inputs con altura expandida
+                        multiline
+                        onContentSizeChange={(e) => {
+                            const altura = e.nativeEvent.contentSize.height;
+
+                            setAlturas(prev => ({
+                                ...prev,
+                                [campo.id]: altura + 1
+                            }));
+                        }}
+                        style={[
+                            styles.input,
+                            {
+                                height: alturas[campo.id] || 50,
+                                textAlignVertical: "top"
+                            }
+                        ]}
                     />
                 );
 
@@ -303,6 +337,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 return (
                     <>
                         <TouchableOpacity
+                            maxFontSizeMultiplier={1.1}
                             style={styles.input}
                             onPress={() => abrirDatePicker(campo.id)}
                         >
@@ -330,25 +365,32 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             case "opciones":
 
+                console.log("Esto es valores", valores);
+
+
                 return (
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={valores[campo.id]}
-                            onValueChange={(itemValue) =>
-                                actualizarValor(campo.id, itemValue)
+
+                    <CustomPickerModal
+                        title={campo.etiqueta}
+                        placeholder="Elija una opción"
+                        value={valores[campo.id]}
+                        style={styles.pickerContainer}
+                        options={campo.opciones?.map((opcion) => (
+                            {
+                                label: opcion,
+                                value: opcion
                             }
-                        >
 
-                            {campo.opciones?.map((opcion, index) => (
-                                <Picker.Item
-                                    key={index}
-                                    label={opcion}
-                                    value={opcion}
-                                />
-                            ))}
 
-                        </Picker>
-                    </View>
+                        ))}
+                        onChange={(valor) =>
+                            actualizarValor(
+                                campo.id,
+                                valor
+                            )
+                        }
+                    />
+
                 );
 
             default:
@@ -360,96 +402,108 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
     return (
 
-        <ScrollView contentContainerStyle={styles.container}>
-
-            <Text style={styles.title}>
-                {plantilla.nombre}
-            </Text>
-
-            {!editando && (
-                <TouchableOpacity
-                    style={styles.botonEditar}
-                    onPress={() =>
-                        navigation.navigate("Crear Plantilla", {
-                            plantilla,
-                        })
-                    }
-                >
-                    <Ionicons
-                        name="create-outline"
-                        size={18}
-                        color="#8B6734"
-                    />
-
-                    <Text style={styles.botonEditarTexto}>
-                        Editar plantilla
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            <View style={styles.inputContainer}>
-
-                <Text style={styles.label}>
-                    Nombre de la orden
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <ScrollView
+                contentContainerStyle={styles.container}
+            >
+                <Text style={styles.title}>
+                    {plantilla.nombre}
                 </Text>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Ej: Instalación Router - Cliente Pérez"
-                    placeholderTextColor="#8C8C8C"
-                    maxFontSizeMultiplier={1.1}
-                    value={nombreOrden}
-                    onChangeText={setNombreOrden}
-                />
+                {!editando && (
+                    <TouchableOpacity
+                        style={styles.botonEditar}
+                        onPress={() =>
+                            navigation.navigate("Crear Plantilla", {
+                                plantilla,
+                            })
+                        }
+                    >
+                        <Ionicons
+                            name="create-outline"
+                            size={18}
+                            color="#8B6734"
+                        />
 
-            </View>
+                        <Text style={styles.botonEditarTexto}>
+                            Editar plantilla
+                        </Text>
+                    </TouchableOpacity>
+                )}
 
-            {plantilla.secciones.map((seccion) => (
+                <View style={styles.inputContainer}>
 
-                <View key={seccion.id} style={styles.seccionContainer}>
-
-                    <Text style={styles.seccionTitulo}>
-                        {seccion.titulo}
+                    <Text style={styles.label}>
+                        Nombre de la orden
                     </Text>
 
-                    {seccion.campos.map((campo) => (
-
-                        <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
-
-                            <Text style={styles.label}>
-                                {campo.etiqueta}
-                            </Text>
-
-                            {renderCampo(campo)}
-
-                        </View>
-
-                    ))}
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Ej: Instalación Router - Cliente Pérez"
+                        placeholderTextColor="#8C8C8C"
+                        maxFontSizeMultiplier={1.1}
+                        value={nombreOrden}
+                        onChangeText={setNombreOrden}
+                    />
 
                 </View>
 
-            ))}
-            <TouchableOpacity
-                style={styles.boton}
-                onPress={guardarOrdenHandler}
-            >
-                <Text style={styles.botonTexto}>
-                    {editando ? "Guardar Cambios" : "Guardar Orden"}
-                </Text>
-            </TouchableOpacity>
+                {plantilla.secciones.map((seccion) => (
 
-            {editando ? <></>
-                : <TouchableOpacity
+                    <View key={seccion.id} style={styles.seccionContainer}>
+
+                        <Text style={styles.seccionTitulo}>
+                            {seccion.titulo}
+                        </Text>
+
+                        {seccion.campos.map((campo) => (
+
+                            <View key={campo.id} style={campo.tipo == "boolean" ? styles.inputBoleanCont : styles.inputContainer}>
+
+                                <Text style={styles.label}>
+                                    {campo.etiqueta}
+                                </Text>
+
+                                {renderCampo(campo)}
+
+                            </View>
+
+                        ))}
+
+                    </View>
+
+                ))}
+                <TouchableOpacity
                     style={styles.boton}
-                    onPress={guardarYGenerarPDFHandler}
+                    onPress={guardarOrdenHandler}
                 >
                     <Text style={styles.botonTexto}>
-                        Guardar y Generar PFD
+                        {editando ? "Guardar Cambios" : "Guardar Orden"}
                     </Text>
-                </TouchableOpacity>}
+                </TouchableOpacity>
+
+                {editando ? <></>
+                    : <TouchableOpacity
+                        style={styles.boton}
+                        onPress={guardarYGenerarPDFHandler}
+                    >
+                        <Text style={styles.botonTexto}>
+                            Guardar y Generar PFD
+                        </Text>
+                    </TouchableOpacity>}
 
 
-        </ScrollView>
+
+
+
+            </ScrollView>
+
+
+
+        </KeyboardAvoidingView>
 
     );
 
@@ -511,6 +565,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
+        height:48,
         borderWidth: 1,
         borderColor: "#E0E0E0",
         borderRadius: 8,
@@ -529,7 +584,18 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E0E0E0",
         borderRadius: 8,
-        backgroundColor: "#FFFFFF"
+        backgroundColor: "#FFFFFF",
+        height: 48,
+        paddingHorizontal: 12,
+
+        flexDirection: "row",
+
+        alignItems: "center",
+
+        justifyContent: "space-between"
+    },
+    picker: {
+        color: "#8C8C8C", // Color del texto
     },
 
     dateText: {

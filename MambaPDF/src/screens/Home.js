@@ -17,6 +17,12 @@
 
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Constants from "expo-constants";
+
+
+const versionActual = Constants.expoConfig.version;
+
+console.log(versionActual);
 
 /**
  * -----------------------------------------------------------------------------
@@ -48,6 +54,8 @@ export default function Home({ navigation }) {
      * @returns {JSX.Element}
      * -------------------------------------------------------------------------
      */
+
+
     const Boton = ({ titulo, pantalla }) => (
 
         <TouchableOpacity

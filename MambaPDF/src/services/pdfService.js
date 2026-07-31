@@ -167,7 +167,7 @@ export function generarHTMLPDF(config, orden, plantilla) {
                             return (`
             <tr>
               <td class="campo">${campo.etiqueta}</td>
-              <td>${valor || ""}</td>
+              <td class="valor">${valor || ""}</td>
             </tr>
           `)
                         }
@@ -231,6 +231,9 @@ box-sizing: border-box;
 .contenido {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 
@@ -295,28 +298,41 @@ margin-bottom: 25px;
 .secciones {
 margin-top:25px;
 }
+.seccion{
+margin-top:35px;
+}
 
 .seccionTitulo {
 padding: 8px;
 font-size: 18px;
+font-weight: bold;
 margin-top: 5px;
 margin-bottom: 0px
 }
 
 .tabla {
-width: 100%;
-border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .tabla td {
-border: 1px solid #ccc;
-padding: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    vertical-align: top;
+
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .campo {
-font-weight: bold;
-width: 40%;
-background: #fafafa;
+    width: 40%;
+    font-weight: bold;
+}
+
+.valor {
+    width: 60%;
 }
 
 /* FIRMAS */
@@ -355,6 +371,10 @@ padding-top: 10px;
 text-align: center;
 font-size: 12px;
 color: #777;
+}
+.firmaYFooter{
+    margin-top: auto;
+
 }
 
 </style>
@@ -423,7 +443,7 @@ ORDEN DE TRABAJO
 </div>
 
 <div class="subtitulo">
-${orden.plantillaId}
+${orden.id}
 </div>
 
 <!-- SECCIONES DINAMICAS -->
@@ -433,6 +453,8 @@ ${seccionesHTML}
 </div>
 
 <!-- FIRMAS -->
+
+<div class="firmaYFooter">
 
 ${config?.ocultarFirmas === false
             ? `
@@ -478,6 +500,8 @@ Recibí conforme
 
 <div class="footer">
 ${config?.piePagina || ""}
+</div>
+
 </div>
 
 </div>

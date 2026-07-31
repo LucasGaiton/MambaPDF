@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { guardarPlantilla } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
+import CustomPickerModal from "../components/CustomPickerModal";
 
 export default function TemplateCreator({ navigation, route }) {
     const plantillaEditar = route?.params?.plantilla;
@@ -432,6 +433,7 @@ export default function TemplateCreator({ navigation, route }) {
             >
 
                 <TextInput
+                    maxFontSizeMultiplier={1.1}
                     placeholder="Nombre de la plantilla"
                     placeholderTextColor="#8C8C8C"
                     value={nombre}
@@ -446,6 +448,7 @@ export default function TemplateCreator({ navigation, route }) {
                         <View style={styles.headerSeccion}>
 
                             <TextInput
+                                maxFontSizeMultiplier={1.1}
                                 style={styles.seccionTituloInput}
                                 placeholder="Nombre de la sección"
                                 placeholderTextColor="#999"
@@ -474,6 +477,7 @@ export default function TemplateCreator({ navigation, route }) {
                                 <View style={styles.headerCampo}>
 
                                     <TextInput
+                                        maxFontSizeMultiplier={1.1}
                                         style={styles.campoInput}
                                         placeholder="Nombre del campo"
                                         placeholderTextColor="#999"
@@ -487,26 +491,28 @@ export default function TemplateCreator({ navigation, route }) {
                                             )
                                         }
                                     />
-
                                     <View style={styles.pickerContainer}>
-                                        <Picker
-                                            style={styles.picker}
-                                            selectedValue={campo.tipo}
-                                            onValueChange={(valor) =>
-                                                editarCampo(
-                                                    seccion.id,
-                                                    campo.id,
-                                                    "tipo",
-                                                    valor
-                                                )
-                                            }
-                                        >
-                                            <Picker.Item label="Tipo de campo" value="" color="#999" />
-                                            <Picker.Item label="Texto" value="texto" />
-                                            <Picker.Item label="Fecha" value="fecha" />
-                                            <Picker.Item label="Sí / No" value="boolean" />
-                                            <Picker.Item label="Opciones" value="opciones" />
-                                        </Picker>
+{console.log(campo)}
+                                    <CustomPickerModal
+                                        value={campo.tipo}
+                                        placeholder="Tipo de campo"
+                                        options={[
+                                            { label: "Texto", value: "texto" },
+                                            { label: "Fecha", value: "fecha" },
+                                            { label: "Sí / No", value: "boolean" },
+                                            { label: "Opciones", value: "opciones" }
+                                        ]}
+                                        onChange={(valor) =>
+                                            editarCampo(
+                                                seccion.id,
+                                                campo.id,
+                                                "tipo",
+                                                valor
+                                            )
+                                        }
+                                    />
+
+
                                     </View>
 
 
@@ -517,6 +523,7 @@ export default function TemplateCreator({ navigation, route }) {
                                             <View style={styles.nuevaOpcionContainer}>
 
                                                 <TextInput
+                                                    maxFontSizeMultiplier={1.1}
                                                     style={styles.inputNuevaOpcion}
                                                     placeholder="Nueva opción"
                                                     placeholderTextColor="#999"
@@ -675,12 +682,9 @@ const styles = StyleSheet.create({
 
     pickerContainer: {
         flex: 1.3,
-        borderWidth: 1,
-        borderColor: "#E0E0E0",
-        borderRadius: 8,
         backgroundColor: "#FFF",
         overflow: "hidden",
-        minHeight: 48,
+        minHeight: 38,
     },
     picker: {
         width: "100%",
@@ -770,7 +774,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#E5E5E5",
         outlineStyle: "none",
-        height: 48
+        height: 38
     },
 
     headerSeccion: {

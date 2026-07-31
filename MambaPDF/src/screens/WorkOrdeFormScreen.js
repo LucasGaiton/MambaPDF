@@ -29,6 +29,7 @@ import {
 } from "react-native";
 
 import { guardarOrden, obtenerConfigPDF } from "../storage/storage";
+import CustomPickerModal from "../components/CustomPickerModal";
 import { Picker } from "@react-native-picker/picker";
 import { DatePickerModal } from "react-native-paper-dates";
 import { Ionicons } from "@expo/vector-icons";
@@ -53,6 +54,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
      * del caso de uso (crear o editar).
      */
     useEffect(() => {
+        
 
         navigation.setOptions({
             title: orden
@@ -74,6 +76,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
         const initialState = {};
 
+        console.log("esto es la plantilla", plantilla);
+        
+
         plantilla.secciones.forEach(seccion => {
 
             seccion.campos.forEach(campo => {
@@ -82,9 +87,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                     initialState[campo.id] = false;
                 }
 
-                else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
-                    initialState[campo.id] = campo.opciones[0];
-                }
+                // else if (campo.tipo === "opciones" && campo.opciones?.length > 0) {
+                //     initialState[campo.id] = campo.opciones[0];
+                // }
 
                 else {
                     initialState[campo.id] = "";
@@ -167,7 +172,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             return;
         }
 
-        const nuevaOrden = {
+        const nuevaOrden = {            
 
             id: editando
                 ? orden.id
@@ -181,6 +186,9 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             valores: valores
 
         };
+
+        console.log("Esto es la nueva orden platillaId", nuevaOrden.plantillaId);
+        
 
 
         await guardarOrden(nuevaOrden.id, nuevaOrden);
@@ -356,26 +364,32 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             case "opciones":
 
+            console.log("Esto es valores", valores);
+            
+
                 return (
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={valores[campo.id]}
-                            onValueChange={(itemValue) =>
-                                actualizarValor(campo.id, itemValue)
+
+                    <CustomPickerModal
+                        title={campo.etiqueta}
+                        placeholder="Elija una opción"
+                        value={valores[campo.id]}
+                        style={styles.pickerContainer}
+                        options={campo.opciones?.map((opcion) => (
+                            {
+                                label: opcion,
+                                value: opcion
                             }
-                            style={styles.picker}
-                        >
 
-                            {campo.opciones?.map((opcion, index) => (
-                                <Picker.Item
-                                    key={index}
-                                    label={opcion}
-                                    value={opcion}
-                                />
-                            ))}
 
-                        </Picker>
-                    </View>
+                        ))}
+                        onChange={(valor) =>
+                            actualizarValor(
+                                campo.id,
+                                valor
+                            )
+                        }
+                    />
+
                 );
 
             default:
@@ -568,7 +582,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E0E0E0",
         borderRadius: 8,
-        backgroundColor: "#FFFFFF"
+        backgroundColor: "#FFFFFF",
+        height: 48,
+        paddingHorizontal: 12,
+
+        flexDirection: "row",
+
+        alignItems: "center",
+
+        justifyContent: "space-between"
     },
     picker: {
         color: "#8C8C8C", // Color del texto

@@ -140,6 +140,8 @@ export default function HistoyOrders({ navigation }) {
     const abrirOrden = (orden) => {
 
         const plantilla = obtenerPlantillaDeOrden(orden);
+        console.log("Esto es lo que se manda a detail", plantilla);
+        
 
         navigation.navigate("Detalle Orden", {
             orden,

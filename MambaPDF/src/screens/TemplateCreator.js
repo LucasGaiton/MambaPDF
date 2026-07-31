@@ -15,9 +15,14 @@ import { guardarPlantilla } from "../storage/storage";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import CustomPickerModal from "../components/CustomPickerModal";
+import { useWindowDimensions } from "react-native";
+import { RF } from "../utils/responsive";
+
+
 
 export default function TemplateCreator({ navigation, route }) {
     const plantillaEditar = route?.params?.plantilla;
+    const { width } = useWindowDimensions();
 
     useEffect(() => {
 
@@ -491,8 +496,7 @@ export default function TemplateCreator({ navigation, route }) {
                                             )
                                         }
                                     />
-                                    <View style={styles.pickerContainer}>
-{console.log(campo)}
+
                                     <CustomPickerModal
                                         value={campo.tipo}
                                         placeholder="Tipo de campo"
@@ -513,7 +517,7 @@ export default function TemplateCreator({ navigation, route }) {
                                     />
 
 
-                                    </View>
+
 
 
                                     {campo.tipo === "opciones" && (
@@ -677,7 +681,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 12,
         fontSize: 15,
-        outlineStyle: "none",// web
     },
 
     pickerContainer: {
@@ -712,16 +715,16 @@ const styles = StyleSheet.create({
 
     botonSecundario: {
         backgroundColor: "#E1890A",
-        paddingVertical: 12,
-        borderRadius: 8,
+        paddingVertical: RF(12),
+        borderRadius: RF(8),
         alignItems: "center",
-        marginBottom: 10
+        marginBottom: RF(10)
     },
 
     botonTexto: {
         color: "white",
         fontWeight: "bold",
-        fontSize: 15
+        fontSize: RF(15)
     },
 
     seccionContainer: {
@@ -740,14 +743,13 @@ const styles = StyleSheet.create({
     },
 
     seccionTituloInput: {
+        flex: 1,
         fontSize: 18,
         fontWeight: "bold",
         color: "#B67A26",
         paddingVertical: 4,
-        marginBottom: 8,
         borderBottomWidth: 1,
         borderBottomColor: "#E5E5E5",
-        outlineStyle: "none"
     },
 
     campoContainer: {
@@ -767,21 +769,18 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E0E0E0",
         backgroundColor: "#FFF",
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 15,
+        borderRadius:8,
+        paddingHorizontal:12, 
+        fontSize:13,
         borderBottomWidth: 1,
         borderBottomColor: "#E5E5E5",
-        outlineStyle: "none",
-        height: 38
+        minheight: 38
     },
 
     headerSeccion: {
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 8
+        gap: 10
     },
 
     headerCampo: {

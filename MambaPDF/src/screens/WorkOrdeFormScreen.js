@@ -54,7 +54,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
      * del caso de uso (crear o editar).
      */
     useEffect(() => {
-        
+
 
         navigation.setOptions({
             title: orden
@@ -77,7 +77,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         const initialState = {};
 
         console.log("esto es la plantilla", plantilla);
-        
+
 
         plantilla.secciones.forEach(seccion => {
 
@@ -172,7 +172,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
             return;
         }
 
-        const nuevaOrden = {            
+        const nuevaOrden = {
 
             id: editando
                 ? orden.id
@@ -188,7 +188,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
         };
 
         console.log("Esto es la nueva orden platillaId", nuevaOrden.plantillaId);
-        
+
 
 
         await guardarOrden(nuevaOrden.id, nuevaOrden);
@@ -337,6 +337,7 @@ export default function WorkOrderFormScreen({ route, navigation }) {
                 return (
                     <>
                         <TouchableOpacity
+                            maxFontSizeMultiplier={1.1}
                             style={styles.input}
                             onPress={() => abrirDatePicker(campo.id)}
                         >
@@ -364,8 +365,8 @@ export default function WorkOrderFormScreen({ route, navigation }) {
 
             case "opciones":
 
-            console.log("Esto es valores", valores);
-            
+                console.log("Esto es valores", valores);
+
 
                 return (
 
@@ -564,6 +565,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
+        height:48,
         borderWidth: 1,
         borderColor: "#E0E0E0",
         borderRadius: 8,

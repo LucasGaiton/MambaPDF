@@ -1,3 +1,17 @@
+/**
+ * =============================================================================
+ * CustomPickerModal
+ * =============================================================================
+ * Componente reutilizable que reemplaza al Picker nativo mediante un modal.
+ *
+ * Funcionalidades principales:
+ *  - Mostrar un selector personalizado con una interfaz consistente.
+ *  - Permitir seleccionar una opción desde una lista.
+ *  - Indicar visualmente la opción actualmente seleccionada.
+ *  - Personalizar el estilo del selector desde el componente padre.
+ * =============================================================================
+ */
+
 import React, { useState } from "react";
 import {
     Modal,
@@ -12,21 +26,74 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function CustomPickerModal({
 
+    /**
+     * Título mostrado en la parte superior del modal.
+     */
     title = "Seleccionar",
+
+    /**
+     * Texto mostrado cuando no existe una opción seleccionada.
+     */
     placeholder = "Seleccione una opción",
+
+    /**
+     * Valor actualmente seleccionado.
+     */
     value,
+
+    /**
+     * Lista de opciones disponibles.
+     *
+     * Formato esperado:
+     * [
+     *   { label: "Texto", value: "texto" },
+     *   { label: "Fecha", value: "fecha" }
+     * ]
+     */
     options,
+
+    /**
+     * Función ejecutada al seleccionar una opción.
+     */
     onChange,
+
+    /**
+     * Permite sobrescribir el estilo del selector desde el
+     * componente padre.
+     */
     style
 
 }) {
 
+    //==========================================================================
+    //                           Estados
+    //==========================================================================
+
+    /**
+     * Controla la visibilidad del modal.
+     */
     const [visible, setVisible] = useState(false);
+
+    /**
+     * Valor utilizado para la animación de aparición
+     * y desaparición del modal.
+     */
     const [fade] = useState(new Animated.Value(0));
 
+    /**
+     * Busca la opción correspondiente al valor actual
+     * para mostrar su etiqueta en el selector.
+     */
     const seleccionado =
         options.find(op => op.value === value);
 
+    //==========================================================================
+    //                           Funciones
+    //==========================================================================
+
+    /**
+     * Abre el modal ejecutando una animación de entrada.
+     */
     const abrir = () => {
 
         setVisible(true);
@@ -41,6 +108,10 @@ export default function CustomPickerModal({
 
     };
 
+    /**
+     * Cierra el modal mediante una animación y,
+     * al finalizar, oculta completamente el componente.
+     */
     const cerrar = () => {
 
         Animated.timing(fade, {
@@ -61,6 +132,10 @@ export default function CustomPickerModal({
 
         <>
 
+            {/* ==========================================================
+                Selector
+               ========================================================== */}
+
             <TouchableOpacity
                 style={style ? style : styles.selector}
                 activeOpacity={0.85}
@@ -68,6 +143,7 @@ export default function CustomPickerModal({
             >
 
                 <Text
+                    maxFontSizeMultiplier={1.1}
                     style={[
                         styles.selectorTexto,
                         !seleccionado && styles.placeholder
@@ -88,6 +164,10 @@ export default function CustomPickerModal({
 
             </TouchableOpacity>
 
+            {/* ==========================================================
+                Modal de selección
+               ========================================================== */}
+
             <Modal
                 visible={visible}
                 transparent
@@ -95,12 +175,10 @@ export default function CustomPickerModal({
             >
 
                 <Animated.View
-                    style={[
-                        styles.overlay
-                        
-                    ]}
+                    style={styles.overlay}
                 >
 
+                    {/* Fondo para cerrar el modal */}
                     <TouchableOpacity
                         style={StyleSheet.absoluteFill}
                         activeOpacity={1}
@@ -138,12 +216,8 @@ export default function CustomPickerModal({
 
                                 >
 
-                                    <Text
-                                        style={styles.itemTexto}
-                                    >
-
+                                    <Text style={styles.itemTexto}>
                                         {item.label}
-
                                     </Text>
 
                                     {item.value === value && (
@@ -180,32 +254,24 @@ export default function CustomPickerModal({
 
 const styles = StyleSheet.create({
 
+    /**
+     * Estilo por defecto del selector.
+     * Puede ser reemplazado mediante la prop "style".
+     */
     selector: {
-
         minHeight: 38,
-
         borderWidth: 1,
-
         borderColor: "#E0E0E0",
-
         borderRadius: 8,
-
         backgroundColor: "#FFF",
-
         paddingHorizontal: 12,
-
         flexDirection: "row",
-
         alignItems: "center",
-
         justifyContent: "space-between"
-
     },
 
     selectorTexto: {
-
-        fontSize: 15,
-
+        fontSize: 13,
         color: "#333"
 
     },
@@ -216,6 +282,9 @@ const styles = StyleSheet.create({
 
     },
 
+    /**
+     * Fondo oscuro del modal.
+     */
     overlay: {
 
         flex: 1,
@@ -230,6 +299,9 @@ const styles = StyleSheet.create({
 
     },
 
+    /**
+     * Contenedor principal del modal.
+     */
     modal: {
 
         width: "100%",
@@ -248,6 +320,9 @@ const styles = StyleSheet.create({
 
     },
 
+    /**
+     * Encabezado del modal.
+     */
     titulo: {
 
         fontSize: 18,
@@ -264,6 +339,9 @@ const styles = StyleSheet.create({
 
     },
 
+    /**
+     * Cada opción de la lista.
+     */
     item: {
 
         flexDirection: "row",
@@ -286,6 +364,9 @@ const styles = StyleSheet.create({
 
     },
 
+    /**
+     * Separador entre opciones.
+     */
     divider: {
 
         height: 1,

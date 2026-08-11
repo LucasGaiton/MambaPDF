@@ -61,6 +61,23 @@ export default function TemplateCreator({ navigation, route }) {
     const [nuevaOpcion, setNuevaOpcion] = useState({});
     //const [opcionesPersonalizadas, setOpcionesPersonalizadas] = useState([]);
 
+    const [seccionesCerradas, setSeccionesCerradas] = useState([]);
+    const alternarSeccion = (idSeccion) => {
+
+        setSeccionesCerradas(prev => {
+
+            if (prev.includes(idSeccion)) {
+
+                return prev.filter(id => id !== idSeccion);
+
+            }
+
+            return [...prev, idSeccion];
+
+        });
+
+    };
+
 
     // ======================================
     // GESTIÓN DE SECCIONES
@@ -448,9 +465,36 @@ export default function TemplateCreator({ navigation, route }) {
 
                 {secciones.map(seccion => (
 
-                    <View key={seccion.id} style={styles.seccionContainer}>
+                    <View
+                        key={seccion.id}
+                        style={styles.seccionContainer}
+                    >
+
+                        {/* ================================
+            ENCABEZADO DE LA SECCIÓN
+        ================================= */}
 
                         <View style={styles.headerSeccion}>
+
+                            <TouchableOpacity
+                                style={styles.botonDesplegar}
+                                onPress={() =>
+                                    alternarSeccion(seccion.id)
+                                }
+                                activeOpacity={0.7}
+                            >
+
+                                <Ionicons
+                                    name={
+                                        seccionesCerradas.includes(seccion.id)
+                                            ? "chevron-up"
+                                            : "chevron-down"
+                                    }
+                                    size={22}
+                                    color="#8B6734"
+                                />
+
+                            </TouchableOpacity>
 
                             <TextInput
                                 maxFontSizeMultiplier={1.1}
@@ -459,178 +503,242 @@ export default function TemplateCreator({ navigation, route }) {
                                 placeholderTextColor="#999"
                                 value={seccion.titulo}
                                 onChangeText={(texto) =>
-                                    editarSeccion(seccion.id, texto)
+                                    editarSeccion(
+                                        seccion.id,
+                                        texto
+                                    )
                                 }
                             />
 
                             <TouchableOpacity
-                                onPress={() => eliminarSeccion(seccion.id)}
+                                onPress={() =>
+                                    eliminarSeccion(seccion.id)
+                                }
+                                activeOpacity={0.7}
                             >
+
                                 <Ionicons
                                     name="trash-outline"
                                     size={22}
                                     color="#E1890A"
                                 />
+
                             </TouchableOpacity>
 
                         </View>
 
-                        {seccion.campos.map(campo => (
 
-                            <View key={campo.id} style={styles.campoContainer}>
+                        {/* ================================
+                                CONTENIDO DESPLEGABLE
+                            ================================= */}
 
-                                <View style={styles.headerCampo}>
+                        {!seccionesCerradas.includes(seccion.id) && (
 
-                                    <TextInput
-                                        maxFontSizeMultiplier={1.1}
-                                        style={styles.campoInput}
-                                        placeholder="Nombre del campo"
-                                        placeholderTextColor="#999"
-                                        value={campo.etiqueta}
-                                        onChangeText={(texto) =>
-                                            editarCampo(
-                                                seccion.id,
-                                                campo.id,
-                                                "etiqueta",
-                                                texto
-                                            )
-                                        }
-                                    />
+                            <>
 
-                                    <CustomPickerModal
-                                        value={campo.tipo}
-                                        placeholder="Tipo de campo"
-                                        options={[
-                                            { label: "Texto", value: "texto" },
-                                            { label: "Fecha", value: "fecha" },
-                                            { label: "Sí / No", value: "boolean" },
-                                            { label: "Opciones", value: "opciones" }
-                                        ]}
-                                        onChange={(valor) =>
-                                            editarCampo(
-                                                seccion.id,
-                                                campo.id,
-                                                "tipo",
-                                                valor
-                                            )
-                                        }
-                                    />
+                                {seccion.campos.map(campo => (
 
+                                    <View
+                                        key={campo.id}
+                                        style={styles.campoContainer}
+                                    >
 
+                                        <View style={styles.headerCampo}>
 
+                                            <TextInput
+                                                maxFontSizeMultiplier={1.1}
+                                                style={styles.campoInput}
+                                                placeholder="Nombre del campo"
+                                                placeholderTextColor="#999"
+                                                value={campo.etiqueta}
+                                                onChangeText={(texto) =>
+                                                    editarCampo(
+                                                        seccion.id,
+                                                        campo.id,
+                                                        "etiqueta",
+                                                        texto
+                                                    )
+                                                }
+                                            />
 
+                                            <View style={styles.pickerContainer}>
 
-                                    {campo.tipo === "opciones" && (
-
-                                        <View style={styles.opcionesEditor}>
-
-                                            <View style={styles.nuevaOpcionContainer}>
-
-                                                <TextInput
-                                                    maxFontSizeMultiplier={1.1}
-                                                    style={styles.inputNuevaOpcion}
-                                                    placeholder="Nueva opción"
-                                                    placeholderTextColor="#999"
-                                                    value={nuevaOpcion[campo.id] || ""}
-                                                    onChangeText={(texto) =>
-                                                        setNuevaOpcion(prev => ({
-                                                            ...prev,
-                                                            [campo.id]: texto
-                                                        }))
+                                                <CustomPickerModal
+                                                    value={campo.tipo}
+                                                    placeholder="Tipo de campo"
+                                                    options={[
+                                                        {
+                                                            label: "Texto",
+                                                            value: "texto"
+                                                        },
+                                                        {
+                                                            label: "Fecha",
+                                                            value: "fecha"
+                                                        },
+                                                        {
+                                                            label: "Sí / No",
+                                                            value: "boolean"
+                                                        },
+                                                        {
+                                                            label: "Opciones",
+                                                            value: "opciones"
+                                                        }
+                                                    ]}
+                                                    onChange={(valor) =>
+                                                        editarCampo(
+                                                            seccion.id,
+                                                            campo.id,
+                                                            "tipo",
+                                                            valor
+                                                        )
                                                     }
                                                 />
 
-                                                <TouchableOpacity
-                                                    style={styles.botonAgregarOpcion}
-                                                    onPress={() =>
-                                                        agregarOpcionCampo(
-                                                            seccion.id,
-                                                            campo.id
-                                                        )
-                                                    }
-                                                >
-                                                    <Ionicons
-                                                        name="add"
-                                                        size={22}
-                                                        color="#FFF"
-                                                    />
-                                                </TouchableOpacity>
-
                                             </View>
 
-                                            {campo.opciones.map((opcion, indice) => (
 
-                                                <View
-                                                    key={indice}
-                                                    style={styles.opcionRow}
-                                                >
+                                            {campo.tipo === "opciones" && (
 
-                                                    <Text style={styles.opcionTexto}>
-                                                        {opcion}
-                                                    </Text>
+                                                <View style={styles.opcionesEditor}>
 
-                                                    <TouchableOpacity
-                                                        onPress={() =>
-                                                            eliminarOpcionCampo(
-                                                                seccion.id,
-                                                                campo.id,
-                                                                indice
-                                                            )
+                                                    <View
+                                                        style={
+                                                            styles.nuevaOpcionContainer
                                                         }
                                                     >
-                                                        <Ionicons
-                                                            name="trash-outline"
-                                                            size={18}
-                                                            color="#A64B2A"
+
+                                                        <TextInput
+                                                            maxFontSizeMultiplier={1.1}
+                                                            style={
+                                                                styles.inputNuevaOpcion
+                                                            }
+                                                            placeholder="Nueva opción"
+                                                            placeholderTextColor="#999"
+                                                            value={
+                                                                nuevaOpcion[campo.id] || ""
+                                                            }
+                                                            onChangeText={(texto) =>
+                                                                setNuevaOpcion(prev => ({
+                                                                    ...prev,
+                                                                    [campo.id]: texto
+                                                                }))
+                                                            }
                                                         />
-                                                    </TouchableOpacity>
+
+                                                        <TouchableOpacity
+                                                            style={
+                                                                styles.botonAgregarOpcion
+                                                            }
+                                                            onPress={() =>
+                                                                agregarOpcionCampo(
+                                                                    seccion.id,
+                                                                    campo.id
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <Ionicons
+                                                                name="add"
+                                                                size={22}
+                                                                color="#FFF"
+                                                            />
+
+                                                        </TouchableOpacity>
+
+                                                    </View>
+
+
+                                                    {campo.opciones.map(
+                                                        (opcion, indice) => (
+
+                                                            <View
+                                                                key={indice}
+                                                                style={styles.opcionRow}
+                                                            >
+
+                                                                <Text
+                                                                    style={
+                                                                        styles.opcionTexto
+                                                                    }
+                                                                >
+                                                                    {opcion}
+                                                                </Text>
+
+                                                                <TouchableOpacity
+                                                                    onPress={() =>
+                                                                        eliminarOpcionCampo(
+                                                                            seccion.id,
+                                                                            campo.id,
+                                                                            indice
+                                                                        )
+                                                                    }
+                                                                >
+
+                                                                    <Ionicons
+                                                                        name="trash-outline"
+                                                                        size={18}
+                                                                        color="#A64B2A"
+                                                                    />
+
+                                                                </TouchableOpacity>
+
+                                                            </View>
+
+                                                        )
+                                                    )}
 
                                                 </View>
 
-                                            ))}
+                                            )}
+
+
+                                            <TouchableOpacity
+                                                style={
+                                                    styles.botonEliminarCampo
+                                                }
+                                                onPress={() =>
+                                                    eliminarCampo(
+                                                        seccion.id,
+                                                        campo.id
+                                                    )
+                                                }
+                                            >
+
+                                                <Ionicons
+                                                    name="trash-outline"
+                                                    size={18}
+                                                    color="#FFF"
+                                                />
+
+                                            </TouchableOpacity>
 
                                         </View>
 
-                                    )}
-                                    <TouchableOpacity
-                                        style={styles.botonEliminarCampo}
-                                        onPress={() => eliminarCampo(seccion.id, campo.id)}
-                                    >
-                                        <Ionicons
-                                            name="trash-outline"
-                                            size={18}
-                                            color="#FFF"
-                                        />
-                                    </TouchableOpacity>
+                                    </View>
+
+                                ))}
 
 
+                                <TouchableOpacity
+                                    style={styles.botonSecundario}
+                                    onPress={() => {
 
-                                </View>
+                                        setSeccionActiva(seccion.id);
 
+                                        agregarCampo();
 
+                                    }}
+                                >
 
+                                    <Text style={styles.botonTexto}>
+                                        + Agregar campo
+                                    </Text>
 
+                                </TouchableOpacity>
 
-                            </View>
+                            </>
 
-                        ))}
-
-                        <TouchableOpacity
-                            style={styles.botonSecundario}
-                            onPress={() => {
-
-                                setSeccionActiva(seccion.id);
-
-                                agregarCampo();
-
-                            }}
-                        >
-
-                            <Text style={styles.botonTexto}>
-                                + Agregar campo
-                            </Text>
-
-                        </TouchableOpacity>
+                        )}
 
                     </View>
 
@@ -769,9 +877,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#E0E0E0",
         backgroundColor: "#FFF",
-        borderRadius:8,
-        paddingHorizontal:12, 
-        fontSize:13,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        fontSize: 13,
         borderBottomWidth: 1,
         borderBottomColor: "#E5E5E5",
         minheight: 38
@@ -780,9 +888,9 @@ const styles = StyleSheet.create({
     headerSeccion: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10
+        gap: 8
     },
-
+   
     headerCampo: {
         width: "100%", // en vez de 90%
         flexDirection: "column",
